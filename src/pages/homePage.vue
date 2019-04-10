@@ -10,7 +10,7 @@
 	        </div>
 	    </div>
 	    <div class="index_content">
-	        <div class="banner"><img src="static/images/index_banner.png"><div class="user"><label>34554</label>位用户<br>已使用车多的购车服务</div></div>
+	        <div class="banner"><img src="../assets/images/banner.png"></div>
 	        <div class="menu_container">
 	            <div class="index_search">
 	                <span class="searchIcon"></span>
@@ -18,39 +18,37 @@
 	            </div>
 	            <div class="menu_list">
 	                <ul>
-	                    <li>
-	                        <router-link to="/findVehicle">
-	                            <div class="menu_img"><img src="static/images/bscy.png"></div>
-	                            <p class="menu_text">本市车源</p>
-	                        </router-link>
+	                    <li @click="goFindVehicle()">	                
+                            <div class="menu_img"><img src="../assets/images/bscy.png"></div>
+                            <p class="menu_text">本市车源</p>                  
 	                    </li>
 	                    <li>
 	                        <a href="publishVehicle.html">
-	                            <div class="menu_img"><img src="static/images/cyfb.png"></div>
+	                            <div class="menu_img"><img src="../assets/images/cyfb.png"></div>
 	                            <p class="menu_text">车源发布</p>
 	                        </a>
 	                    </li>
 	                    <li>
 	                        <a href="seekVehicle.html">
-	                            <div class="menu_img"><img src="static/images/dkqg.png"></div>
+	                            <div class="menu_img"><img src="../assets/images/dkqg.png"></div>
 	                            <p class="menu_text">代客求购</p>
 	                        </a>
 	                    </li>
 	                    <li>
 	                        <a href="mendCheck.html">
-	                            <div class="menu_img"><img src="static/images/wbcx.png"></div>
+	                            <div class="menu_img"><img src="../assets/images/wbcx.png"></div>
 	                            <p class="menu_text">维保查询</p>
 	                        </a>
 	                    </li>
 	                    <li>
 	                        <a href="activeCenter.html">
-	                            <div class="menu_img"><img src="static/images/hdzx.png"></div>
+	                            <div class="menu_img"><img src="../assets/images/hdzx.png"></div>
 	                            <p class="menu_text">活动中心</p>
 	                        </a>
 	                    </li>
 	                    <li>
 	                        <a href="javascript:;" id="bangbanfenqi">
-	                            <div class="menu_img"><img src="static/images/bbfq.png"></div>
+	                            <div class="menu_img"><img src="../assets/images/bbfq.png"></div>
 	                            <p class="menu_text">帮客户办分期</p>
 	                        </a>
 	                    </li>
@@ -59,8 +57,8 @@
 	            <div class="index_swiper" id="swiperIndex">
 		            <div class="swiper-container swiper-index">
 		                <div class="swiper-wrapper">
-		                    <div class="swiper-slide"><a href=""><img src="static/images/lbt1.png"></a></div>
-		                    <div class="swiper-slide"><a href=""><img src="static/images/lbt1.png"></a></div>
+		                    <div class="swiper-slide"><a href=""><img src="../assets/images/lbt1.png"></a></div>
+		                    <div class="swiper-slide"><a href=""><img src="../assets/images/lbt1.png"></a></div>
 		                </div>
 		                <!-- Add Pagination -->
 		                <div class="swiper-pagination"></div>
@@ -74,12 +72,12 @@
 
 <script>
 	import Swiper from 'static/js/swiper.js'
-	import footerBar from '@/components/footer'
+	import footerBar from '../components/footer'
 	export default{
 		name:'homePage',
 		data(){
 			return {
-				"currentPage":"shouye"
+				currentPage:"shouye",
 			}
 		},
 		components:{footerBar},
@@ -87,20 +85,27 @@
 			this.lunbo();
 		},
 		methods:{
-			lunbo : function(){
+			lunbo: function(){
 				var swiper = new Swiper('.swiper-index', {
 		            loop:true,
 		            pagination: {
 		                el: '.swiper-pagination',
 		            },
 		        });
-			}
+			},
+			goFindVehicle: function(){
+				this.$store.commit('vehicleList/init')
+				this.$router.push("/findVehicle");
+			},			
 		}
 	}
 </script>
 
 <style scoped>
-    @import '../assets/css/swiper.css';
+    @import '../../static/css/swiper.css';
+    #choiceCity{
+    	font-size: .24rem;
+    }
 	.container{
 		height: 100%;
 	}
@@ -135,7 +140,7 @@
 	    display: inline-block;
 	    width: 0.2rem;
 	    height: 0.1rem;
-	    background: url("../../static/images/down_arrow.png") no-repeat;
+	    background: url("../assets/images/down_arrow.png") no-repeat;
 	    background-size: 100% 100%;
 	    vertical-align: middle;
 	}
@@ -143,22 +148,24 @@
 	    position: relative;
 	    width: 0.4rem;
 	    height: 0.3rem;
-	    background: url("../../static/images/mesIcon.png") no-repeat;
+	    background: url("../assets/images/mesIcon.png") no-repeat;
 	    background-size: 100% 100%;
 	}
 	.index_nav .container .message label{
 	    font-size: 0.18rem;
 	    border-radius: 0.2rem;
 	    position: absolute;
-	    right: -0.15rem;
+	    right: 0;
 	    top: -0.15rem;
 	    display: inline-block;
 	    color: #fff;
 	    background: #FF2F2F;
-	    width: 0.32rem;
 	    height: 0.29rem;
 	    text-align: center;
-	    line-height: 0.34rem;
+	    line-height: 0.29rem;
+	    padding: 0 0.07rem;
+	    transform: translateX(50%);
+	    -webkit-transform: translateX(50%);
 	}
 	.index_content{
 	    height: 100%;
@@ -248,7 +255,7 @@
 	    display: inline-block;
 	    width: 0.22rem;
 	    height: 0.24rem;
-	    background: url("../../static/images/searchIcon.png") no-repeat;
+	    background: url("../assets/images/searchIcon.png") no-repeat;
 	    background-size: 100% 100%;
 	    margin-right: 0.2rem;
 	}

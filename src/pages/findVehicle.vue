@@ -1,34 +1,25 @@
 <template>
 	<div class="container">
-		<div class="myCarSource_topbar">
-			<div class="container">
-				<div class="left_arrow" @click="goBack()">
-					<img src="static/images/left_arrow.png">
-				</div>
-				<div class="search"><img src="static/images/searchIcon.png"><input type="text" name="" placeholder="搜索您要找的车辆"></div>
-				<div class="order" id="filterVehicle" @click="goFilter()"><img src="static/images/orderIcon.png"></div>
-				<div class="share" id="share_btn"><img src="static/images/shareIcon.png"></div>
-			</div>
-		</div>
+		<header2></header2>
 		<div class="ershouche_list_content">
 			<div class="dis"></div>
 			<div class="selection_list">
-	        	<a class="selection_item" href="vehicleType.html"><span class="span1">车源</span><span class="span2"></span></a>
-	        	<a class="selection_item" href="choiceBrand.html"><span class="span1">品牌</span><span class="span2"></span></a>
-	        	<a class="selection_item" href="coty.html"><span class="span1">车龄</span><span class="span2"></span></a>
-	        	<a class="selection_item" href="filterPrice.html"><span class="span1">价格</span><span class="span2"></span></a>
+	        	<router-link class="selection_item" :to="{path: 'vehicleType', query: {from: 'findVehicle'}}"><span class="span1">车源</span><span class="span2"></span></router-link>
+	        	<router-link class="selection_item" :to="{path: 'choiceBrand', query: {from: 'findVehicle'}}"><span class="span1">品牌</span><span class="span2"></span></router-link>
+	        	<router-link class="selection_item" :to="{path: 'coty', query: {from: 'findVehicle'}}"><span class="span1">车龄</span><span class="span2"></span></router-link>
+	        	<router-link class="selection_item" :to="{path: 'filterPrice', query: {from: 'findVehicle'}}"><span class="span1">价格</span><span class="span2"></span></router-link>
 	        	<span class="selection_item" @click="showOrderList()" id="order_btn" v-bind:class="[xuanzhuan=='xuanzhuan'?'active':'']"><span class="span1">排序</span><span class="span2"></span></span>
 			</div>
 			<transition name="order">
 				<div class="order_container" v-show="show">
 					<div class="bg"></div>
 					<ul>
-						<li class="order_item">车况最好</li>
-						<li class="order_item">价格最低</li>
-						<li class="order_item">价格最高</li>
-						<li class="order_item">车龄最短</li>
-						<li class="order_item">里程最小</li>
-						<li class="order_item">最近上架</li>
+						<li class="order_item" @click="paixu(1)">车况最好</li>
+						<li class="order_item" @click="paixu(2)">价格最低</li>
+						<li class="order_item" @click="paixu(3)">价格最高</li>
+						<li class="order_item" @click="paixu(4)">车龄最短</li>
+						<li class="order_item" @click="paixu(5)">里程最小</li>
+						<li class="order_item" @click="paixu(6)">最近上架</li>
 					</ul>
 				</div>
 			</transition>
@@ -62,7 +53,7 @@
 				<div id="loadMoreContainerW">
 					<div id="loadMoreContainer">
 						<span v-show="!loading">上拉加载更多</span>
-						<img v-show="loading" src="static/images/loading.gif">
+						<img v-show="loading" src="../assets/images/loading.gif">
 					</div>
 				</div>
 			</div>
@@ -71,6 +62,8 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import header2 from '@/components/header2'
 	export default{
 		data(){
 			return{
@@ -78,27 +71,27 @@
 				xuanzhuan: "",
 				items:[
 					{
-						"imgUrl":"static/images/carimg1.png",
+						"imgUrl":require("@/assets/images/carimg1.png"),
 						"title":"奥迪2016款 Q5 TFSI技术型",
 						"des":"2016.01 / 3万公里 / 山东临沂"
 					},
 					{
-						"imgUrl":"static/images/carimg1.png",
+						"imgUrl":require("@/assets/images/carimg1.png"),
 						"title":"奥迪2016款 Q5 TFSI技术型",
 						"des":"2016.01 / 3万公里 / 山东临沂"
 					},
 					{
-						"imgUrl":"static/images/carimg1.png",
+						"imgUrl":require("@/assets/images/carimg1.png"),
 						"title":"奥迪2016款 Q5 TFSI技术型",
 						"des":"2016.01 / 3万公里 / 山东临沂"
 					},
 					{
-						"imgUrl":"static/images/carimg1.png",
+						"imgUrl":require("@/assets/images/carimg1.png"),
 						"title":"奥迪2016款 Q5 TFSI技术型",
 						"des":"2016.01 / 3万公里 / 山东临沂"
 					},
 					{
-						"imgUrl":"static/images/carimg1.png",
+						"imgUrl":require("@/assets/images/carimg1.png"),
 						"title":"奥迪2016款 Q5 TFSI技术型",
 						"des":"2016.01 / 3万公里 / 山东临沂"
 					},
@@ -111,8 +104,12 @@
 			}
 		},
 		mounted(){
-
+			console.log(this.data.data)
 		},
+		computed: mapState({
+		   data: state => state.vehicleList,
+		}),
+		components:{header2},
 		methods:{
 			showOrderList: function(){
 				this.show = !this.show;
@@ -122,110 +119,8 @@
 					this.xuanzhuan = ""
 				}
 			},
-			goFilter: function(){
-
-			},
-			goBack: function(){
-				this.$router.goBack();
-			},
-			loadMore: function(){
-				var _this = this;
-				var el = document.querySelector("#ershouche_list_wrapper");
-				var el2 = document.querySelector("#ershouche_list");
-				var st = el.scrollTop;
-				var ch = el.clientHeight;
-				var sh = el.scrollHeight;
-				var startX = 0, startY = 0; //触摸开始时手势横纵坐标 
-				var oPosition = {}; //触点位置
-				var l = 1;
-				var ct;
-				//获取触点位置
-		        function touchPos(e){
-		        	
-		            var touches = e.changedTouches, l = touches.length, touch, tagX, tagY;
-		            for (var i = 0; i < l; i++) {
-		                touch = touches[i];
-		                tagX = touch.clientX;
-		                tagY = touch.clientY;
-		            }
-		            oPosition.x = tagX;
-		            oPosition.y = tagY;
-		            return oPosition;
-		        }
-		        //触摸开始
-		        function touchStartFunc(e){
-		            touchPos(e);
-		            startX = oPosition.x;
-		            startY = oPosition.y;
-		            ct =  parseInt(el2.offsetTop);
-		        }
-		        //触摸移动 
-		        function touchMoveFunc(e){
-		            touchPos(e);
-		            var moveX = oPosition.x - startX;
-		            var moveY = oPosition.y - startY;
-		            var _moveY = ct + moveY;
-		            var _tl = _this.tl;
-		            _moveY *= _tl/(_tl + Math.abs(_moveY));
-
-		            if(moveY < 0){
-		            	el2.style.transition = "all 0s linear";
-		            	el2.style.webkitTransform = "translateY("+ _moveY +"px)";		        
-		            }
-		           
-		            if(moveY < -40){
-		            	console.log(_this.LoadMore)
-		            	if(_this.LoadMore){
-		            		_this.LoadMore = false;
-		            		console.log("调用ajax");
-		            		_this.loading = !_this.loading;
-		            		var arr = _this.items;
-		            		setTimeout(function(){
-		            			for (var i = 0; i < 10; i++) {
-		            				var data = {
-		            					"imgUrl":"static/images/carimg1.png",
-										"title":"奥迪2016款 Q5 TFSI技术型",
-										"des":"2016.01 / 3万公里 / 山东临沂"
-		            				}
-		            				arr.push(data);
-		            				
-		            			};
-		            			_this.items = arr;
-		            			_this.LoadMore = true;
-		            			el2.style.webkitTransform = "translateY(0px)";
-		                        el2.style.transition = "-webkit-transform .2s ease-in-out"
-		            			el.removeEventListener('touchstart', touchStartFunc);
-			            		el.removeEventListener('touchend', touchEndFunc);
-			            		el.removeEventListener('touchmove', touchMoveFunc);
-			            		_this.once = true;
-			            		_this.loading = !_this.loading;
-			            		document.querySelector("#loadMoreContainerW").style.display = "none";
-		            		},2000);
-
-		            	}
-		            }
-		        }
-
-		        // 触摸结束
-		        function touchEndFunc(e){
-		            touchPos(e);
-		            var moveX = oPosition.x - startX;
-		            var moveY = oPosition.y - startY;
-		            el2.style.webkitTransform = "translateY(0px)";
-		            el2.style.transition = "-webkit-transform .2s ease-in-out"
-		        } 
-		        console.log(st,ch,sh)
-	        	if(st + ch > sh - 5){
-	        		if(_this.once){
-	        			_this.once = false;
-						console.log("jianting");
-			            document.querySelector("#loadMoreContainerW").style.display = "block";
-						el.addEventListener('touchstart', touchStartFunc, false);        
-		                el.addEventListener('touchend', touchEndFunc, false);
-		                el.addEventListener('touchmove', touchMoveFunc, false);
-		            }           	
-				}
-				
+			paixu: function(id){
+				this.$store.commit('vehicleList/changeSort',id);
 			}
 		}
 	}
@@ -234,86 +129,6 @@
 <style scoped>
 	.container{
 		height: 100%;
-	}
-	.myCarSource_topbar{
-	    height: 0.88rem;
-	    background: #fff;
-	    border-bottom: 1px solid #ddd;
-	    box-sizing: border-box;
-	    padding: 0 0.32rem;
-	    position: fixed;
-	    z-index: 999;
-	    top: 0;
-	    width: 100%;
-	}
-	.myCarSource_topbar .container{
-	    width: 100%;
-	    height: 100%;
-	    display: -webkit-box;
-	    display: -ms-flexbox;
-	    display: -webkit-flex;
-	    display: flex;
-	    -webkit-box-pack: space-between;
-	    -ms-flex-pack: space-between;
-	    -webkit-justify-content: space-between;
-	    justify-content: space-between;
-	    -webkit-box-align: center;
-	    -ms-flex-align: center;
-	    -webkit-align-items: center;
-	    align-items: center;
-	}
-	.myCarSource_topbar .left_arrow{
-	    width: 0.16rem;
-	    height: 0.29rem;
-	}
-	.myCarSource_topbar .left_arrow img{
-	    width: 100%;
-	    height: 100%;
-	    vertical-align: top;
-	}
-	.myCarSource_topbar .search{
-	    width: 4.92rem;
-	    height: 0.6rem;
-	    border-radius: 0.3rem;
-	    background: #F4F4F4;
-	    display: -webkit-box;
-	    display: -ms-flexbox;
-	    display: -webkit-flex;
-	    display: flex;
-	    -webkit-box-pack: center;
-	    -ms-flex-pack: center;
-	    -webkit-justify-content: center;
-	    justify-content: center;
-	    -webkit-box-align: center;
-	    -ms-flex-align: center;
-	    -webkit-align-items: center;
-	    align-items: center;
-	}
-	.myCarSource_topbar .search img{
-	    width: 0.22rem;
-	    height: 0.24rem;
-	}
-	.myCarSource_topbar .search input{
-	    background: none;
-	    margin-left: 0.1rem;
-	}
-	.myCarSource_topbar .order{
-	    width: 0.4rem;
-	    height: 0.34rem;
-	}
-	.myCarSource_topbar .order img{
-	    width: 100%;
-	    height: 100%;
-	    vertical-align: top;
-	}
-	.myCarSource_topbar .share{
-	    width: 0.44rem;
-	    height: 0.40rem;
-	}
-	.myCarSource_topbar .share img{
-	    width: 100%;
-	    height: 100%;
-	    vertical-align: top;
 	}
 	.ershouche_list_content{
 	    padding-top: 0.88rem;
@@ -326,7 +141,7 @@
 	.ershouche_list_content .dis {
 	    height: 0.2rem;
 	    background: #eeeff0;
-	    z-index: 9;
+	    z-index: 99;
 	    position: relative;
 	}
 	.selection_list{
@@ -335,7 +150,7 @@
 	    position: relative;
 	    border-bottom: 1px solid #EFEFEF;
 	    box-sizing: border-box;
-	    z-index: 9;
+	    z-index: 99;
 	}
 	.selection_list .selection_item{
 	    width: 20%;
@@ -363,7 +178,7 @@
 	.selection_list .selection_item .span2{
 	    width: 0.16rem;
 	    height: 0.1rem;
-	    background: url("../../static/images/xiaosanjiao.png") no-repeat;
+	    background: url("../assets/images/xiaosanjiao.png") no-repeat;
 	    background-size: 100% 100%;
 	    margin-left: 0.1rem;
 	}
@@ -381,6 +196,7 @@
 	    position: fixed;
 	    width: 100%;
 	    height: calc(100% - 1.84rem);
+	    z-index: 9;
 	}
 	.order_container .bg{
 	    width: 100%;
@@ -402,8 +218,8 @@
 	    background: #fff;
 	}
 	.order-enter-active, .order-leave-active {
-	    transition: all .2s;
-	    -webkit-transition: all .2s;
+	    transition: transform .2s;
+	    -webkit-transition: transform .2s;
 	}
 	.order-enter, .order-leave-to {
 	    transform: translateY(-100%);

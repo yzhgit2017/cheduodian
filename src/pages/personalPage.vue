@@ -1,9 +1,9 @@
 <template>
 	<div class="personal_content">
-        <div class="personal_head"><img src="static/images/personal_top.png"><p class="personal_title">个人中心</p></div>
+        <div class="personal_head"><img src="../assets/images/personal_top.png"><p class="personal_title">个人中心</p></div>
         <div class="personal_menu">
             <div class="personal_card">
-                <div class="touxiang"><img src="static/images/touxiang.png"></div>
+                <div class="touxiang"><img src="../assets/images/touxiang.png"></div>
                 <p class="p1">大众二手车</p>
                 <p class="p2">1561****123</p>
                 <div class="bottom">
@@ -21,25 +21,25 @@
                 <ul>
                     <li>
                         <a href="myVehicle.html">
-                            <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.46rem;height: 0.38rem;line-height: 0.38rem;"><img src="static/images/wdcy.png"></div></div>
+                            <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.46rem;height: 0.38rem;line-height: 0.38rem;"><img src="../assets/images/wdcy.png"></div></div>
                             <p class="personal_menu_text">我的车源</p>
                         </a>
                     </li>
                     <li>
                         <a href="mySeek.html">
-                            <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.49rem;height: 0.44rem;line-height: 0.44rem;"><img src="static/images/wdqg.png"></div></div>
+                            <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.49rem;height: 0.44rem;line-height: 0.44rem;"><img src="../assets/images/wdqg.png"></div></div>
                             <p class="personal_menu_text">我的求购</p>
                         </a>
                     </li>
                     <li>
                         <a href="personalRecord.html">
-                            <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.38rem;height: 0.43rem;line-height: 0.43rem;"><img src="static/images/lxjl.png"></div></div>
+                            <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.38rem;height: 0.43rem;line-height: 0.43rem;"><img src="../assets/images/lxjl.png"></div></div>
                             <p class="personal_menu_text">联系记录</p>
                         </a>
                     </li>
                     <li>
                         <a href="myCollection.html">
-                            <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.42rem;height: 0.39rem;line-height: 0.39rem;"><img src="static/images/sccy.png"></div></div>
+                            <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.42rem;height: 0.39rem;line-height: 0.39rem;"><img src="../assets/images/sccy.png"></div></div>
                             <p class="personal_menu_text">收藏车源</p>
                         </a>
                     </li>
@@ -100,7 +100,7 @@
 </template>
 
 <script>
-	import footerBar from '@/components/footer'
+	import footerBar from '../components/footer'
 	export default{
 		data(){
 			return {

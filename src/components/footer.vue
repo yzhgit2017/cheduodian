@@ -89,21 +89,21 @@
 	.index_tabbar .tab_item .iww .iw1{
 	    width: 0.5rem;
 	    height: 0.42rem;
-	    background: url("../../static/images/footercar.png") no-repeat;
+	    background: url("../assets/images/footercar.png") no-repeat;
 	    background-size: 100% 100%;
 	}
 	.index_tabbar .tab_item.active .iw1{
-	    background: url("../../static/images/footercaron.png") no-repeat;
+	    background: url("../assets/images/footercaron.png") no-repeat;
 	    background-size: 100% 100%;
 	}
 	.index_tabbar .tab_item .iww .iw2{
 	    width: 0.4rem;
 	    height: 0.4rem;
-	    background: url("../../static/images/footerpersonal.png") no-repeat;
+	    background: url("../assets/images/footerpersonal.png") no-repeat;
 	    background-size: 100% 100%;
 	}
 	.index_tabbar .tab_item.active .iw2{
-	    background: url("../../static/images/footerpersonalon.png") no-repeat;
+	    background: url("../assets/images/footerpersonalon.png") no-repeat;
 	    background-size: 100% 100%;
 	}
 </style>
