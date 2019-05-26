@@ -16,96 +16,179 @@ import choiceMarket from '@/pages/choiceMarket'
 import filterMileage from '@/pages/filterMileage'
 import biansuxiang from '@/pages/biansuxiang'
 import displacement from '@/pages/displacement'
+import choiceColor from '@/pages/choiceColor'
+import vehicleDetails from '@/pages/vehicleDetails'
+import publishVehicle from '@/pages/publishVehicle'
+import uploadImg from '@/pages/uploadImg'
 
 Vue.use(Router)
 
 Router.prototype.goBack = function () { 
 　　this.isBack = true
-　　window.history.go(-1)
+　　this.back()
 }
 
 export default new Router({
-  mode: 'history',
   routes: [
     {
       path: '/',
       name: 'index',
-      component: index
+      component: index,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/homePage',
       name: 'homePage',
-      component: homePage
+      component: homePage,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/personalPage',
       name: 'personalPage',
-      component: personalPage
+      component: personalPage,
+      meta: {
+        keepAlive: false
+      }
     },
     {
-      path: '/findVehicle',
+      path: '/findVehicle/:from',
       name: 'findVehicle',
-      component: findVehicle
+      component: findVehicle,
+      meta: {
+        keepAlive: true
+      }
     },
     {
       path: '/test',
       name: 'test',
-      component: test
+      component: test,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/vehicleType',
       name: 'vehicleType',
-      component: vehicleType
+      component: vehicleType,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/login',
       name: 'login',
-      component: login
+      component: login,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/choiceBrand',
       name: 'choiceBrand',
-      component: choiceBrand
+      component: choiceBrand,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/choiceCity',
       name: 'choiceCity',
-      component: choiceCity
+      component: choiceCity,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/coty',
       name: 'coty',
-      component: coty
+      component: coty,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/filterPrice',
       name: 'filterPrice',
-      component: filterPrice
+      component: filterPrice,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/filter',
       name: 'filter',
-      component: filter
+      component: filter,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/choiceMarket',
       name: 'choiceMarket',
-      component: choiceMarket
+      component: choiceMarket,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/filterMileage',
       name: 'filterMileage',
-      component: filterMileage
+      component: filterMileage,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/biansuxiang',
       name: 'biansuxiang',
-      component: biansuxiang
+      component: biansuxiang,
+      meta: {
+        keepAlive: false
+      }
     },
     {
       path: '/displacement',
       name: 'displacement',
-      component: displacement
+      component: displacement,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/choiceColor',
+      name: 'choiceColor',
+      component: choiceColor,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/vehicleDetails/:id',
+      name: 'vehicleDetails',
+      component: vehicleDetails,
+      meta: {
+        keepAlive: true
+      }
+    },
+    {
+      path: '/publishVehicle',
+      name: 'publishVehicle',
+      component: publishVehicle,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/uploadImg',
+      name: 'uploadImg',
+      component: uploadImg,
+      meta: {
+        keepAlive: false
+      }
     },
   ]
 })

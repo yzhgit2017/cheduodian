@@ -102,6 +102,7 @@
 <script>
 	import footerBar from '../components/footer'
 	export default{
+		name: 'personalPage',
 		data(){
 			return {
 				"currentPage":"geren"

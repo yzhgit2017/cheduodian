@@ -18,15 +18,13 @@
 	            </div>
 	            <div class="menu_list">
 	                <ul>
-	                    <li @click="goFindVehicle()">	                
+	                    <li @click="goCityVehicle()">	                
                             <div class="menu_img"><img src="../assets/images/bscy.png"></div>
                             <p class="menu_text">本市车源</p>                  
 	                    </li>
-	                    <li>
-	                        <a href="publishVehicle.html">
-	                            <div class="menu_img"><img src="../assets/images/cyfb.png"></div>
-	                            <p class="menu_text">车源发布</p>
-	                        </a>
+	                    <li @click="goPublishVehicle()">
+                            <div class="menu_img"><img src="../assets/images/cyfb.png"></div>
+                            <p class="menu_text">车源发布</p>
 	                    </li>
 	                    <li>
 	                        <a href="seekVehicle.html">
@@ -46,11 +44,9 @@
 	                            <p class="menu_text">活动中心</p>
 	                        </a>
 	                    </li>
-	                    <li>
-	                        <a href="javascript:;" id="bangbanfenqi">
-	                            <div class="menu_img"><img src="../assets/images/bbfq.png"></div>
-	                            <p class="menu_text">帮客户办分期</p>
-	                        </a>
+	                    <li @click="goWholesaleVehicle()">
+                            <div class="menu_img"><img src="../assets/images/pfcy.png"></div>
+                            <p class="menu_text">批发车源</p>
 	                    </li>
 	                </ul>
 	            </div>
@@ -93,10 +89,18 @@
 		            },
 		        });
 			},
-			goFindVehicle: function(){
+			goCityVehicle: function(){
 				this.$store.commit('vehicleList/init')
-				this.$router.push("/findVehicle");
-			},			
+				this.$router.push("/findVehicle/cityVehicle");
+			},
+			goWholesaleVehicle: function(){
+				this.$store.commit('vehicleList/init')
+				this.$store.commit('vehicleList/changePAC',{provinceId: 0,cityText: '全国',cityId: 0})
+				this.$router.push("/findVehicle/wholesaleVehicle");
+			},
+			goPublishVehicle: function(){
+				this.$router.push("/publishVehicle");
+			}		
 		}
 	}
 </script>

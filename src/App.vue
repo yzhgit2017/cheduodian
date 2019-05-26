@@ -2,7 +2,12 @@
   <div id="app">
     <img src="./assets/images/loading2.gif" v-show="loadingState" class="loadingImg">
   	<transition :name="transitionName">
-        <router-view />
+  	    <template v-if="$route.meta.keepAlive">
+	  	    <keep-alive>
+	            <router-view></router-view>
+	        </keep-alive>
+        </template>
+        <router-view v-if="!$route.meta.keepAlive"></router-view>
     </transition>
   </div>
 </template>
@@ -43,7 +48,7 @@
 
 <style>
 	#app{
-		height: 100%;
+		
 	}
 	.loadingImg{
 		position: fixed;

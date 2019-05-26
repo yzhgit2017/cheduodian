@@ -1,7 +1,7 @@
 <template>
 	<div class="index_tabbar" id="index_tabbar">
         <div class="tab_item" v-bind:class="[footerActive == 'shouye' ? 'active' : '']">
-            <router-link to="/">
+            <router-link to="/homePage">
                 <div class="iww"><div class="iw1"></div></div>
                 <p class="text">首页</p>
             </router-link>

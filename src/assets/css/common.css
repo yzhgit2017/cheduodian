@@ -3,7 +3,7 @@
 	padding: 0;
 }
 html,body{
-	height: 100%;
+	
 }
 body{
 	font-family:"PingFang SC Medium","Microsoft YaHei";
@@ -17,4 +17,10 @@ a{
 input{
 	outline: none;
 	border: 0;
+}
+p{
+	font-size: 0.24rem;
+}
+input,textarea,select,button{
+	outline: none;
 }

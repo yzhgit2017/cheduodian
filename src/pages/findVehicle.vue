@@ -1,114 +1,187 @@
 <template>
 	<div class="container">
 		<header2></header2>
+		
 		<div class="ershouche_list_content">
+		    <div style="height: 0.88rem;"></div>
 			<div class="dis"></div>
 			<div class="selection_list">
-	        	<router-link class="selection_item" :to="{path: 'vehicleType', query: {from: 'findVehicle'}}"><span class="span1">车源</span><span class="span2"></span></router-link>
-	        	<router-link class="selection_item" :to="{path: 'choiceBrand', query: {from: 'findVehicle'}}"><span class="span1">品牌</span><span class="span2"></span></router-link>
-	        	<router-link class="selection_item" :to="{path: 'coty', query: {from: 'findVehicle'}}"><span class="span1">车龄</span><span class="span2"></span></router-link>
-	        	<router-link class="selection_item" :to="{path: 'filterPrice', query: {from: 'findVehicle'}}"><span class="span1">价格</span><span class="span2"></span></router-link>
-	        	<span class="selection_item" @click="showOrderList()" id="order_btn" v-bind:class="[xuanzhuan=='xuanzhuan'?'active':'']"><span class="span1">排序</span><span class="span2"></span></span>
+	        	<router-link class="selection_item" :to="{path: '/vehicleType', query: {from: 'findVehicle'}}" v-html="cheyuan"></router-link>
+	        	<router-link class="selection_item" :to="{path: '/choiceBrand', query: {from: 'findVehicle'}}" v-html="pinpai"></router-link>
+	        	<router-link class="selection_item" :to="{path: '/coty', query: {from: 'findVehicle'}}" v-html="cheling"></router-link>
+	        	<router-link class="selection_item" :to="{path: '/filterPrice', query: {from: 'findVehicle'}}" v-html="jiage"></router-link>
+	        	<span class="selection_item" @click="showOrderList()" id="order_btn" v-bind:class="[xuanzhuan=='xuanzhuan'?'active':'']" v-html="paixu1">{{paixu1}}</span>
 			</div>
 			<transition name="order">
 				<div class="order_container" v-show="show">
 					<div class="bg"></div>
 					<ul>
-						<li class="order_item" @click="paixu(1)">车况最好</li>
-						<li class="order_item" @click="paixu(2)">价格最低</li>
-						<li class="order_item" @click="paixu(3)">价格最高</li>
-						<li class="order_item" @click="paixu(4)">车龄最短</li>
-						<li class="order_item" @click="paixu(5)">里程最小</li>
-						<li class="order_item" @click="paixu(6)">最近上架</li>
+						<li class="order_item" @click="paixu(1,'车况最好')">车况最好</li>
+						<li class="order_item" @click="paixu(2,'价格最低')">价格最低</li>
+						<li class="order_item" @click="paixu(3,'价格最高')">价格最高</li>
+						<li class="order_item" @click="paixu(4,'车龄最短')">车龄最短</li>
+						<li class="order_item" @click="paixu(5,'里程最小')">里程最小</li>
+						<li class="order_item" @click="paixu(6,'最近上架')">最近上架</li>
 					</ul>
 				</div>
 			</transition>
-			<div class="ershouche_list_wrapper">
-			    <div id="ershouche_list_wrapper" @scroll="loadMore()">
-					<ul class="ershouche_list" id="ershouche_list" style="position: relative;">
-						<li v-for="(item,index) in items">							
+	    	<div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
+		        <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore" :autoFill="false">
+		        	<div slot="top" class="mint-loadmore-top">
+			            <span v-show="topStatus !== 'loading'" :class="{ 'is-rotate': topStatus === 'drop' }">↓</span>
+			            <span v-show="topStatus === 'loading'">
+				            <mt-spinner type="snake"></mt-spinner>
+				        </span>
+			        </div>
+					<ul class="ershouche_list" id="ershouche_list">
+						<li v-for="(item,index) in vehicleData" @click="goDetails(item.id)">							
 							<div class="card_list_item_content">
-								<div class="iw"><img :src="item.imgUrl"></div>
+								<div class="iw"><img :src="http + item.img"></div>
 								<div class="des">
-									<p class="p1">{{item.title}}</p>
-									<p class="p2">{{item.des}}</p>
+									<p class="p1">{{item.carname}}</p>
+									<p class="p2">{{item.boarding_time}} / {{item.driven_distance}} 万公里 / {{item.city}}</p>
 									<div class="p3">
-										<p><label class="bg1">可调</label><label class="bg2">急售</label></p>
-										<div class="state">车况:100</div>
+										<p>
+										    <template v-for="(subitem,index) in item.typename">
+											    <label class="bg1" v-if="subitem != '急售'">{{subitem}}</label>
+											    <label class="bg2" v-if="subitem == '急售'">{{subitem}}</label>
+											</template>
+										</p>
+										<div class="state">车况:{{item.car_score}}</div>
 									</div>
 									<div class="p4">
-										<div class="price"><span>25.00</span>万</div>
-										<div class="lianxi">联系卖家</div>
+										<div class="price"><span>{{item.wholesale_money}}</span>万</div>
+										<div class="lianxi" @click="call()">联系卖家</div>
 									</div>
 								</div>
 							</div>							
 						</li>					
 					</ul>
-					<div id="unsatisfactory">
+					<div id="unsatisfactory" v-show="publishSeek">
 						<p>没有满意的车？发布求购，<br>车源自己来找你</p>
 						<a href="">去求购试试</a>
 					</div>
-				</div>
-
-				<div id="loadMoreContainerW">
-					<div id="loadMoreContainer">
-						<span v-show="!loading">上拉加载更多</span>
-						<img v-show="loading" src="../assets/images/loading.gif">
-					</div>
-				</div>
-			</div>
+					<div slot="bottom" class="mint-loadmore-bottom">
+			            <span v-show="bottomStatus !== 'loading'" :class="{ 'is-rotate': bottomStatus === 'drop' }">↑</span>
+			            <span v-show="bottomStatus === 'loading'">
+				            <mt-spinner type="snake"></mt-spinner>
+				        </span>
+			        </div>
+				</mt-loadmore>
+			</div>		
 		</div>
 	</div>
 </template>
 
 <script>
-    import { mapState } from 'vuex'
     import header2 from '@/components/header2'
 	export default{
+		name: 'findVehicle',
 		data(){
 			return{
+				token: localStorage.getItem('myToken'),
+				http: this.$http,
 				show: false,
 				xuanzhuan: "",
-				items:[
-					{
-						"imgUrl":require("@/assets/images/carimg1.png"),
-						"title":"奥迪2016款 Q5 TFSI技术型",
-						"des":"2016.01 / 3万公里 / 山东临沂"
-					},
-					{
-						"imgUrl":require("@/assets/images/carimg1.png"),
-						"title":"奥迪2016款 Q5 TFSI技术型",
-						"des":"2016.01 / 3万公里 / 山东临沂"
-					},
-					{
-						"imgUrl":require("@/assets/images/carimg1.png"),
-						"title":"奥迪2016款 Q5 TFSI技术型",
-						"des":"2016.01 / 3万公里 / 山东临沂"
-					},
-					{
-						"imgUrl":require("@/assets/images/carimg1.png"),
-						"title":"奥迪2016款 Q5 TFSI技术型",
-						"des":"2016.01 / 3万公里 / 山东临沂"
-					},
-					{
-						"imgUrl":require("@/assets/images/carimg1.png"),
-						"title":"奥迪2016款 Q5 TFSI技术型",
-						"des":"2016.01 / 3万公里 / 山东临沂"
-					},
-				],
-				once:true,
-				lmh:"",
-				LoadMore:true,
-				tl:150,
-				loading:false
+				vehicleData: [],
+				once: true,
+				lmh: "",
+				LoadMore: true,
+				tl: 150,
+				loading: false,
+				allLoaded: false,
+                bottomStatus: '',
+                wrapperHeight: 0,
+                topStatus: '',
+		        translate: 0,
+		        moveTranslate: 0,
+		        page: 1,
+		        pagenum: 15,
+		        publishSeek: false,
+		        st: 0,
+		        cheyuan: '<span class="span1">车源</span><span class="span2"></span>',
+		        pinpai: '<span class="span1">品牌</span><span class="span2"></span>',
+		        cheling: '<span class="span1">车龄</span><span class="span2"></span>',
+		        jiage: '<span class="span1">价格</span><span class="span2"></span>',
+		        paixu1: '<span class="span1">排序</span><span class="span2"></span>',
+			}
+		},
+		created(){
+			var _this = this;
+			console.log("创建",this.filterData.data)
+			var data = this.requestData(this.filterData.data.sort.id)
+			if(this.$route.params.from == 'wholesaleVehicle'){
+				this.$fetchPost('/wholCarSource',data).then(function(res){
+					console.log(res)
+					_this.vehicleData = res.data.data;
+					// _this.$refs.loadmore.onTopLoaded();
+					if(res.data.total < _this.pagenum){
+						_this.publishSeek = true;
+						_this.allLoaded = true;
+					}
+					
+				})
+			}
+            //改变筛选项的说明文字
+			let initData = this.filterData.data;
+			if(initData.cartype.text != ''){
+				this.cheyuan = '<span class="span3">'+ initData.cartype.text +'</span>'
+			}
+			let brandText = '';
+			if(initData.brand.id == ''){
+				
+			}else if(initData.brand.id == 0){
+				brandText = '不限';
+			}else{
+				brandText = initData.brand.text;
+			};
+			if(initData.series.id == '' || initData.series.id == 0){
+				
+			}else{
+				brandText += '-' + initData.series.text;
+			};
+			if(initData.spec.id == '' || initData.spec.id == 0){
+
+			}else{
+				brandText += '-' + initData.spec.text;
+			};
+			
+			if(brandText != ''){
+				console.log(brandText)
+				this.pinpai = '<span class="span3">'+ brandText +'</span>'
+			}
+			if(initData.age != ''){
+				this.cheling = '<span class="span3">'+ initData.age +'</span>'
+			}
+			if(initData.price != ''){
+				this.jiage = '<span class="span3">'+ initData.price +'</span>'
+			}
+			if(initData.sort.text != ''){
+				this.paixu1 = '<span class="span3">'+ initData.sort.text +'</span>'
 			}
 		},
 		mounted(){
-			console.log(this.data.data)
+			this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.offsetTop;	
 		},
-		computed: mapState({
-		   data: state => state.vehicleList,
-		}),
+		activated(){
+            this.$refs.wrapper.scrollTop = this.st;
+		},
+		deactivated(){
+
+		},
+		beforeRouteLeave (to, from, next){
+		    if(to.name == "vehicleDetails"){
+		    	from.meta.keepAlive = true;
+		    }else{
+		    	from.meta.keepAlive = false;
+		    }
+		    next();
+		},
+		computed: {
+		    filterData(){
+		   	    return this.$store.state.vehicleList
+		    }
+		},
 		components:{header2},
 		methods:{
 			showOrderList: function(){
@@ -119,9 +192,113 @@
 					this.xuanzhuan = ""
 				}
 			},
-			paixu: function(id){
-				this.$store.commit('vehicleList/changeSort',id);
-			}
+			paixu: function(id,text){
+				this.$store.commit('vehicleList/changeSort',{sortId: id, sortName: text});
+				this.paixu1 = '<span class="span3">'+ text +'</span>'
+				var _this = this;
+				var data = this.requestData(id)
+				if(this.$route.params.from == 'wholesaleVehicle'){
+					this.$fetchPost('/wholCarSource',data).then(function(res){
+						console.log(res)
+						_this.vehicleData = res.data.data;
+						_this.$refs.loadmore.onTopLoaded();
+						if(res.data.total < _this.pagenum){
+							_this.publishSeek = true;
+							_this.allLoaded = true;
+						}
+						_this.show = !_this.show;
+					})
+				}
+			},
+			handleBottomChange(status) {
+		        this.bottomStatus = status;
+		    },
+		    loadBottom() {
+		        var _this = this;
+				var data = this.requestData(this.filterData.data.sort.id)
+				if(this.$route.params.from == 'wholesaleVehicle'){
+					this.$fetchPost('/wholCarSource',data).then(function(res){
+						console.log(res)
+						if(res.data.total < _this.pagenum){
+							_this.vehicleData = _this.vehicleData.concat(res.data.data);
+							_this.$refs.loadmore.onBottomLoaded();
+							_this.publishSeek = true;
+							_this.allLoaded = true;
+						}else{
+							if(_this.vehicleData.length < res.data.total){
+								_this.vehicleData = _this.vehicleData.concat(res.data.data);
+							    _this.$refs.loadmore.onBottomLoaded();
+							}else{
+								_this.publishSeek = true;
+								_this.allLoaded = true;
+								_this.$refs.loadmore.onBottomLoaded();
+							}
+						}									
+					})
+				}
+				this.page++;
+				
+		    },
+		    handleTopChange(status) {
+		        this.moveTranslate = 1;
+		        this.topStatus = status;
+		    },
+		    translateChange(translate) {
+		        const translateNum = +translate;
+		        this.translate = translateNum.toFixed(2);
+		        this.moveTranslate = (1 + translateNum / 70).toFixed(2);
+		    },
+		    loadTop() {
+		        var _this = this;
+		        this.publishSeek = false;
+				var data = this.requestData(this.filterData.data.sort.id)
+				if(this.$route.params.from == 'wholesaleVehicle'){
+					this.$fetchPost('/wholCarSource',data).then(function(res){
+						console.log(res)
+						_this.vehicleData = res.data.data;
+						_this.$refs.loadmore.onTopLoaded();
+						if(res.data.total < _this.pagenum){
+							_this.publishSeek = true;
+							_this.allLoaded = true;
+						}
+						
+					})
+				}
+		    },
+		    goDetails: function(id){
+		    	this.st = this.$refs.wrapper.scrollTop;
+		    	this.$router.push("/vehicleDetails/"+ id +"")
+		    },
+		    call: function(){
+		    	event.stopPropagation();		   
+		    },
+		    requestData: function(sort){
+		    	var data = {
+					token: this.token,
+					province: this.filterData.data.province,
+					search: this.filterData.data.search,
+					city: this.filterData.data.city.id,
+					market: this.filterData.data.market.id,
+					brand: this.filterData.data.brand.id,
+					series: this.filterData.data.series.id,
+					spec: this.filterData.data.spec.id,
+					minage: this.filterData.data.minage,
+					maxage: this.filterData.data.maxage,
+					minprice: this.filterData.data.minprice,
+					maxprice: this.filterData.data.maxprice,
+					minmileage: this.filterData.data.minmileage,
+					maxmileage: this.filterData.data.maxmileage,
+					transmissioncase: this.filterData.data.transmissioncase.id,
+					mindisplacement: this.filterData.data.mindisplacement,
+					maxdisplacement: this.filterData.data.maxdisplacement,
+					color: this.filterData.data.color.id,
+					cartype: this.filterData.data.cartype.id,
+					sort: sort,
+					page: 1,
+					pagenum: this.pagenum
+				}
+				return data
+		    }
 		}
 	}
 </script>
@@ -131,8 +308,8 @@
 		height: 100%;
 	}
 	.ershouche_list_content{
-	    padding-top: 0.88rem;
-	    height: 100%;
+	    /*margin-top: 0.88rem;
+	    height: calc(100% - 0.88rem);*/
 	    box-sizing: border-box;
 	    background: #fff;
 	    position: relative;
@@ -230,8 +407,11 @@
 	    width: 100%;
 	    height: calc(100% - 0.96rem);   
 	}
+	.page-loadmore-wrapper{
+		overflow: scroll;
+	}
 	#ershouche_list_wrapper{
-	    position: absolute;
+	    position: relative;
 	    height: 100%;
 	    width: 100%;
 	    top: 0;
@@ -349,7 +529,6 @@
 	#unsatisfactory{
 	    padding-top: 0.48rem;
 	    padding-bottom: 0.48rem;
-	    display: none;
 	    background: #fff;
 	}
 	#unsatisfactory p{
@@ -405,5 +584,63 @@
 	#loadMoreContainer span{
 	    color: #fff;
 	    font-size: 0.24rem;
+	}
+	.mint-spinner {
+	    display: inline-block;
+	    vertical-align: middle;
+	}
+	.mint-loadmore-bottom span{
+	    display: inline-block;
+        transition: .2s linear;
+        vertical-align: middle;
+        font-size: 0.44rem;
+	}
+	.mint-loadmore-bottom span.is-rotate{
+		transform: rotate(180deg);
+	}
+	.mint-loadmore-top{
+		/*margin-top: 0;
+		position: absolute;
+		top: -50px;
+		width: 100%;*/
+	}
+	.mint-loadmore-top span{
+	    display: inline-block;
+        transition: .2s linear;
+        vertical-align: middle;
+        font-size: 0.44rem;
+	}
+	.mint-loadmore-top span.is-rotate{
+		transform: rotate(180deg);
+	}
+</style>
+
+<style>
+	.selection_list .selection_item .span1{
+	    font-size: 0.28rem;
+	    line-height: 0.3rem;
+	    color: #000;
+	}
+	.selection_list .selection_item .span2{
+	    width: 0.16rem;
+	    height: 0.1rem;
+	    background: url("../assets/images/xiaosanjiao.png") no-repeat;
+	    background-size: 100% 100%;
+	    margin-left: 0.1rem;
+	}
+	.selection_list .selection_item.active .span2{
+	   
+	    -webkit-transform: rotateZ(180deg);
+	    transform: rotateZ(180deg);
+	    
+	}
+	.selection_list .selection_item .span3 {
+	    white-space: nowrap;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	    font-size: 0.28rem;
+	    line-height: 0.3rem;
+	    color: #000;
+	    text-align: center;
 	}
 </style>

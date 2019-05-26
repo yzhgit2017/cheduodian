@@ -42,7 +42,7 @@
 			},
 			choice: function(min,max,val,index){
      			this.activeItem = index;
-     			if(this.$route.query.from = 'filter'){
+     			if(this.$route.query.from == 'filter'){
      				this.$store.commit('filterCondition/changePrice',{min: min, max: max, val: val});
      			}else{
      				this.$store.commit('vehicleList/changePrice',{min: min, max: max, val: val});

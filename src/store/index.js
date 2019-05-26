@@ -6,7 +6,7 @@ Vue.use(Vuex)
 const vehicleList = {
 	namespaced: true,
 	state: {
-		loadingState: false
+		loadingState: false,
 	},
 	mutations: {
 		changeLoadingState(state,loadingState){
@@ -62,8 +62,16 @@ const vehicleList = {
 					text: '',
 					id: ''
 				},
-				sort: ''
+				sort: {
+					id: '',
+					text: ''
+				}
 			})
+		},
+		changePAC(state,params){
+			state.data.province = params.provinceId;
+			state.data.city.text = params.cityText;
+			state.data.city.id = params.cityId;
 		},
 		changeType(state,params){
 			state.data.cartype.id = params.typeId;
@@ -97,7 +105,8 @@ const vehicleList = {
 			state.data.market.id = params.marketId;
 		},
 		changeSort(state,params){
-			state.data.sort = params;
+			state.data.sort.id = params.sortId;
+			state.data.sort.text = params.sortText;
 		},
 		changeMileage(state,params){
 			state.data.minmileage = params.min;
@@ -112,6 +121,10 @@ const vehicleList = {
 			state.data.mindisplacement = params.min;
 			state.data.maxdisplacement = params.max;
 			state.data.displacement = params.val;
+		},
+		changeColor(state,params){
+			state.data.color.text = params.colorName;
+			state.data.color.id = params.colorId;
 		}
 	},
 	actions: {},
@@ -246,6 +259,10 @@ const filterCondition = {
 			state.data.mindisplacement = params.min;
 			state.data.maxdisplacement = params.max;
 			state.data.displacement = params.val;
+		},
+		changeColor(state,params){
+			state.data.color.text = params.colorName;
+			state.data.color.id = params.colorId;
 		}
 	},
 	actions: {},

@@ -12,10 +12,10 @@
 			<router-link :to="{path: 'filterMileage', query: {from: 'filter'}}" class="qiucon1">里程<span class="filterDes"><span>{{mileageText}}</span><img src="../assets/images/right_arrow.png"></span></router-link>
 			<router-link :to="{path: 'biansuxiang', query: {from: 'filter'}}" class="qiucon1">变速箱<span class="filterDes"><span>{{biansuxiang}}</span><img src="../assets/images/right_arrow.png"></span></router-link>
 			<router-link :to="{path: 'displacement', query: {from: 'filter'}}" class="qiucon1">排量<span class="filterDes"><span>{{pailiang}}</span><img src="../assets/images/right_arrow.png"></span></router-link>
-			<div class="qiucon1">颜色<span class="filterDes"><span>{{colorText}}</span><img src="../assets/images/right_arrow.png"></span></div>
+			<router-link :to="{path: 'choiceColor', query: {from: 'filter'}}" class="qiucon1">颜色<span class="filterDes"><span>{{colorText}}</span><img src="../assets/images/right_arrow.png"></span></router-link>
 			<router-link :to="{path: 'vehicleType', query: {from: 'filter'}}" class="qiucon1">车源类型<span class="filterDes"><span>{{typeText}}</span><img src="../assets/images/right_arrow.png"></span></router-link>
 		</div>
-		<div class="xfabu"><span class="shouig">清空</span><span class="shouig">查看车源</span></div>
+		<div class="xfabu"><span class="shouig" @click="clearFilter()">清空</span><span class="shouig" @click="confirm()">查看车源</span></div>
 	</div>
 </template>
 
@@ -109,6 +109,33 @@
 				this.typeText = '不限';
 			}else{
 				this.typeText = initData.cartype.text;
+			}
+		},
+		methods: {
+			clearFilter: function(){
+				this.$store.commit('filterCondition/init');
+				this.cityText = '不限';
+				this.marketText = '不限';
+				this.brandText = '不限';
+				this.cotyText = '不限';
+				this.priceText = '不限';
+				this.mileageText = '不限';
+				this.biansuxiang = '不限';
+				this.pailiang = '不限';
+				this.colorText = '不限';
+				this.typeText = '不限';
+			},
+			confirm: function(){
+				var filterData = this.data.data;
+				this.$store.commit('vehicleList/changeBrand',{brandId: filterData.brand.id, brandName: filterData.brand.text, seriesId: filterData.series.id, seriesName: filterData.series.text, specId: filterData.spec.id, specName: filterData.spec.text});
+				this.$store.commit('vehicleList/changeCoty',{min: filterData.minage, max: filterData.maxage, val: filterData.age});
+				this.$store.commit('vehicleList/changePrice',{min: filterData.minprice, max: filterData.maxprice, val: filterData.price});
+				this.$store.commit('vehicleList/changeMileage',{min: filterData.minmileage, max: filterData.maxmileage, val: filterData.mileage});
+				this.$store.commit('vehicleList/biansuxiang',{id: filterData.transmissioncase.id, val: filterData.transmissioncase.text});
+				this.$store.commit('vehicleList/displacement',{min: filterData.mindisplacement, max: filterData.maxdisplacement, val: filterData.displacement});
+				this.$store.commit('vehicleList/changeColor',{colorId: filterData.color.id, colorName: filterData.color.text});
+				this.$store.commit('vehicleList/changeType',{typeId: filterData.cartype.id, typeName: filterData.cartype.text});
+				this.$router.goBack();
 			}
 		}
 	}
