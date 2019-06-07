@@ -93,6 +93,11 @@
 		mounted(){
 
 		},
+		computed: {
+		    publishData(){
+		   	    return this.$store.state.publishCondition
+		    }
+		},
 		methods: {
 			choiceColor: function(type){
 				const that = this;

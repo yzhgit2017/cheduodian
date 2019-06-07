@@ -3,8 +3,8 @@ import qs from 'qs'
 import store from '../store/index'
 
 axios.defaults.timeout = 5000;
-// axios.defaults.baseURL = 'http://cheduodian.mcbn.cn';
-axios.defaults.baseURL = 'http://nw.cheduodian.com';
+axios.defaults.baseURL = 'http://cheduodian.mcbn.cn';
+// axios.defaults.baseURL = 'http://nw.cheduodian.com';
 
 axios.interceptors.request.use((config) => {
     // 显示加载中的效果

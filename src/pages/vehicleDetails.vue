@@ -77,17 +77,6 @@
 		</div>
 		<div class="hehight"></div>
 		<div class="xfabu"><span class="shouig" :class="[shoucang == '0'?'':'sc']" @click="shoucangfuc()"><span class="icon iconfont icon-star"></span>收藏</span><span class="shouig" @click="lianxi(data.user_tel)">联系卖家</span></div>
-		<!--查看缩略图开始-->
-		<div class="checkImg" :class="[showCheck?'active':'']">
-			<div class="mask"></div>
-			<div class="swiper-container swiper-check" id="swiper-check">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide" v-for="(item,index) in data.photos" @click="closeAllScreen()"><img :src="http + item" @touchstart="scalestart(index)" @touchmove="scalemove(index)" @touchend="scaleend(index)" :id="'quanpingtu' + index" @load="imgLoad(index)"></div>
-                </div>
-                <div class="swiper-pagination"></div>
-            </div>
-		</div>
-		<!--查看缩略图结束-->
 	</div>
 </template>
 
@@ -100,15 +89,10 @@
 				token: localStorage.getItem('myToken'),
 				data: '',
 				http: this.$http,
-				showCheck: false,
 				swiper1: '',
-				swiper2: '',
-				startPositions: '',
-				ciw: '',
-				cii: '',
-				imgData: {},
 				shoucang: '',
-				shoucangdianji: true
+				shoucangdianji: true,
+				imgData: ''
 			}
 		},
 		mounted(){
@@ -119,12 +103,9 @@
 		},
 		deactivated(){
 			this.data = '';
-			this.imgData = {};
-			this.startPositions = '';
-			this.ciw = '';
-			this.cii = '';
 			this.shoucang = '';
 			this.shoucangdianji = true;
+			this.imgData = '';
 		},
 		methods:{
 			loadData: function(){
@@ -133,102 +114,25 @@
 				this.$fetchPost('/getCarDetil',data).then(function(res){
 					console.log(res)
 					_this.data = res.data;
+					_this.imgData = res.data.photos;
 					_this.shoucang = res.data.is_coll;		
 				})
 			},
 			lunbo1: function(){
 				this.swiper1 = new Swiper('.swiper-details', {
 		            loop:true,
-		          
 		        });
 			},
-			lunbo2: function(index){
-				let that = this;
-				this.swiper2 = new Swiper('.swiper-check', {    
-		            initialSlide: index,
-		          	pagination: {
-		                el: '.swiper-pagination',
-		            },
-		            on:{
-					    slideChange: function(){
-					        let id = "quanpingtu" + that.cii;
-					        document.getElementById(id).style.width = that.imgData[that.cii].w + 'px';
-					        document.getElementById(id).style.height = that.imgData[that.cii].h + 'px';
-					    },
-					},
-		        });
-			},
+			
 			goBack: function(){
 				this.$router.goBack();
 			},
 			imgAllScreen: function(index){
-				this.showCheck = true;
 				let _index = parseInt(index)
-				this.lunbo2(_index);
-				console.log(this.imgData)
-			},
-			closeAllScreen: function(){
-				this.showCheck = false;
-				this.swiper2.destroy(true);
-			},
-			scalestart: function(index){
-				this.cii = index;
-				this.startPositions = event.targetTouches
-			},
-			scalemove: function(index){
-				let sx1 = this.startPositions[0].pageX;
-				let sy1 = this.startPositions[0].pageY;
-				let sx2 = this.startPositions[1].pageX;
-				let sy2 = this.startPositions[1].pageY;
-				let sdis = Math.sqrt(Math.pow(Math.abs(sx1 - sx2),2) + Math.pow(Math.abs(sy1 - sy2),2));
-				let mx1 = event.targetTouches[0].pageX;
-				let my1 = event.targetTouches[0].pageY;
-				let mx2 = event.targetTouches[1].pageX;
-				let my2 = event.targetTouches[1].pageY;
-				let mdis = Math.sqrt(Math.pow(Math.abs(mx1 - mx2),2) + Math.pow(Math.abs(my1 - my2),2));
-				let quanpingtu = "quanpingtu" + index;
-				let ciw = document.getElementById(quanpingtu).clientWidth;
-				this.ciw = ciw;
-				if(mdis - sdis > 0){
-					let cw1 = Math.abs(mx1 - sx1);
-					let cw2 = Math.abs(mx2 - sx2);
-					let ch1 = Math.abs(my1 - sy1);
-					let ch2 = Math.abs(my2 - sy2);
-					document.getElementById(quanpingtu).style.width = this.imgData[index].w + cw1 + cw2 + 'px';
-					document.getElementById(quanpingtu).style.height = this.imgData[index].h + ch1 + ch2 + 'px';
-				}
-				if(mdis - sdis < 0){
-					let cw1 = Math.abs(mx1 - sx1);
-					let cw2 = Math.abs(mx2 - sx2);
-					let ch1 = Math.abs(my1 - sy1);
-					let ch2 = Math.abs(my2 - sy2);
-					if(ciw < 250){
-				
-					}else{
-						document.getElementById(quanpingtu).style.width = this.imgData[index].w - cw1 - cw2 + 'px';
-					    document.getElementById(quanpingtu).style.height = this.imgData[index].h - ch1 - ch2 + 'px';
-					}
-				}
-			},
-			scaleend: function(index){
-				let quanpingtu = "quanpingtu" + index;
-				if(this.ciw < 250){
-					document.getElementById(quanpingtu).style.width = this.imgData[index].w + 'px';
-			        document.getElementById(quanpingtu).style.height = this.imgData[index].h + 'px';
-				}	
-			},
-			imgLoad: function(index){
-				if(this.data != ''){
-					let id = "quanpingtu" + index;
-					let item = {}
-					let currentImgWidth = document.getElementById(id).clientWidth;
-				    let currentImgHeight = document.getElementById(id).clientHeight;
-				    // console.log(currentImgWidth)
-				    // console.log(currentImgHeight)
-				    item.w = currentImgWidth;
-				    item.h = currentImgHeight;
-				    this.imgData[index] = item;
-				}	
+				this.$swiperImgZoom({
+					data: this.imgData,
+					index: _index
+				})
 			},
 			shoucangfuc: function(){
 				let that = this;
@@ -271,8 +175,7 @@
 		},
 		beforeUpdate: function(){
 			if(this.swiper1 != ''){
-				this.swiper1.destroy(true);
-			    
+				this.swiper1.destroy(true);  
 			}
 		},
 		updated: function(){

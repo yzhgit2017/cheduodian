@@ -269,9 +269,30 @@ const filterCondition = {
 	getters: {}
 }
 
+const publishCondition = {
+	namespaced: true,
+	state: {},
+	mutations: {
+		init(state){
+			Vue.set(state,'data',{
+				fengmian: '',
+				photos: '',
+			})
+		},
+		uploadImg(state,params){
+			state.data.fengmian = params.fengmian;
+			state.data.photos = params.photos;
+		}
+		
+	},
+	actions: {},
+	getters: {}
+}
+
 export default new Vuex.Store({
   modules: {
     vehicleList: vehicleList,
-    filterCondition: filterCondition
+    filterCondition: filterCondition,
+    publishCondition: publishCondition
   },
 })
