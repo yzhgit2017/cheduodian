@@ -7,6 +7,59 @@ const vehicleList = {
 	namespaced: true,
 	state: {
 		loadingState: false,
+		data: {
+			search: '',
+			search_id: '',
+			province: '',
+			city: {
+				text: '',
+				id: ''
+			},
+			market: {
+				text: '',
+				id: ''
+			},
+			brand: {
+				text: '',
+				id: ''
+			},
+			series: {
+				text: '',
+				id: ''
+			},
+			spec: {
+				text: '',
+				id: ''
+			},
+			minage: '',
+			maxage: '',
+			age: '',
+			minprice: '',
+			maxprice: '',
+			price: '',
+			minmileage: '',
+			maxmileage: '',
+			mileage: '',
+			transmissioncase: {
+				text: '',
+				id: ''
+			},
+			mindisplacement: '',
+			maxdisplacement: '',
+			displacement: '',
+			color: {
+				text: '',
+				id: ''
+			},
+			cartype: {
+				text: '',
+				id: ''
+			},
+			sort: {
+				id: '',
+				text: ''
+			}
+		}
 	},
 	mutations: {
 		changeLoadingState(state,loadingState){
@@ -14,59 +67,40 @@ const vehicleList = {
 			state.loadingState = loadingState;
 		},
 		init(state){
-			Vue.set(state,'data',{
-				search: '',
-				search_id: '',
-				province: localStorage.getItem("myProvinceId"),
-				city: {
-					text: localStorage.getItem("myRoomCity"),
-					id: localStorage.getItem("myRoomCityId")
-				},
-				market: {
-					text: '',
-					id: ''
-				},
-				brand: {
-					text: '',
-					id: ''
-				},
-				series: {
-					text: '',
-					id: ''
-				},
-				spec: {
-					text: '',
-					id: ''
-				},
-				minage: '',
-				maxage: '',
-				age: '',
-				minprice: '',
-				maxprice: '',
-				price: '',
-				minmileage: '',
-				maxmileage: '',
-				mileage: '',
-				transmissioncase: {
-					text: '',
-					id: ''
-				},
-				mindisplacement: '',
-				maxdisplacement: '',
-				displacement: '',
-				color: {
-					text: '',
-					id: ''
-				},
-				cartype: {
-					text: '',
-					id: ''
-				},
-				sort: {
-					id: '',
-					text: ''
-				}
-			})
+			state.data.province = '';
+			state.data.city.text = '';
+			state.data.city.id = '';
+			state.data.cartype.id = '';
+			state.data.cartype.text = '';
+			state.data.brand.text = '';
+			state.data.brand.id = '';
+			state.data.series.text = '';
+			state.data.series.id = '';
+			state.data.spec.text = '';
+			state.data.spec.id = '';
+			state.data.province = '';
+			state.data.city.text = '';
+			state.data.city.id = '';
+			state.data.minage = '';
+			state.data.maxage = '';
+			state.data.age = '';
+			state.data.minprice = '';
+			state.data.maxprice = '';
+			state.data.price = '';
+			state.data.market.text = '';
+			state.data.market.id = '';
+			state.data.sort.id = '';
+			state.data.sort.text = '';
+			state.data.minmileage = '';
+			state.data.maxmileage = '';
+			state.data.mileage = '';
+			state.data.transmissioncase.text = '';
+			state.data.transmissioncase.id = '';
+			state.data.mindisplacement = '';
+			state.data.maxdisplacement = '';
+			state.data.displacement = '';
+			state.data.color.text = '';
+			state.data.color.id = '';
 		},
 		changePAC(state,params){
 			state.data.province = params.provinceId;
@@ -133,56 +167,86 @@ const vehicleList = {
 
 const filterCondition = {
 	namespaced: true,
-	state: {},
+	state: {
+		data: {
+			province: '',
+			city: {
+				text: '',
+				id: ''
+			},
+			market: {
+				text: '',
+				id: ''
+			},
+			brand: {
+				text: '',
+				id: ''
+			},
+			series: {
+				text: '',
+				id: ''
+			},
+			spec: {
+				text: '',
+				id: ''
+			},
+			minage: '',
+			maxage: '',
+			age: '',
+			minprice: '',
+			maxprice: '',
+			price: '',
+			minmileage: '',
+			maxmileage: '',
+			mileage: '',
+			transmissioncase: {
+				text: '',
+				id: ''
+			},
+			mindisplacement: '',
+			maxdisplacement: '',
+			displacement: '',
+			color: {
+				text: '',
+				id: ''
+			},
+			cartype: {
+				text: '',
+				id: ''
+			},
+		}
+	},
 	mutations: {
 		init(state){
-			Vue.set(state,'data',{
-				province: '',
-				city: {
-					text: '',
-					id: ''
-				},
-				market: {
-					text: '',
-					id: ''
-				},
-				brand: {
-					text: '',
-					id: ''
-				},
-				series: {
-					text: '',
-					id: ''
-				},
-				spec: {
-					text: '',
-					id: ''
-				},
-				minage: '',
-				maxage: '',
-				age: '',
-				minprice: '',
-				maxprice: '',
-				price: '',
-				minmileage: '',
-				maxmileage: '',
-				mileage: '',
-				transmissioncase: {
-					text: '',
-					id: ''
-				},
-				mindisplacement: '',
-				maxdisplacement: '',
-				displacement: '',
-				color: {
-					text: '',
-					id: ''
-				},
-				cartype: {
-					text: '',
-					id: ''
-				},
-			})
+			state.data.province = '';
+			state.data.city.text = '';
+			state.data.city.id = '';
+			state.data.market.text = '';
+			state.data.market.id = '';
+			state.data.brand.text = '';
+			state.data.brand.id = '';
+			state.data.series.text = '';
+			state.data.series.id = '';
+			state.data.spec.text = '';
+			state.data.spec.id = '';
+			state.data.minage = '';
+			state.data.maxage = '';
+			state.data.age = '';
+			state.data.minprice = '';
+			state.data.maxprice = '';
+			state.data.price = '';
+			state.data.minmileage = '';
+			state.data.maxmileage = '';
+			state.data.mileage = '';
+			state.data.transmissioncase.text = '';
+			state.data.transmissioncase.id = '';
+			state.data.mindisplacement = '';
+			state.data.maxdisplacement = '';
+			state.data.displacement = '';
+			state.data.color.id = '';
+			state.data.color.text = '';
+			state.data.cartype.text = '';
+			state.data.cartype.id = '';
 		},
 		filterAlive(state,params){
 			state.data.province = params.provinceId;
@@ -271,17 +335,112 @@ const filterCondition = {
 
 const publishCondition = {
 	namespaced: true,
-	state: {},
+	state: {
+		data: {
+			fengmian: '',
+			photos: '',
+			vin: '',
+			pailiang: '',
+			licheng: '',
+			brand: {
+				text: '',
+				id: ''
+			},
+			series: {
+				text: '',
+				id: ''
+			},
+			spec: {
+				text: '',
+				id: ''
+			},
+			color: {
+				text: '',
+				id: ''
+			},
+			transmissioncase: {
+				text: '',
+				id: ''
+			},
+			market: {
+				text: '',
+				id: ''
+			},
+			car_color_id: [],
+			car_des: [],
+			car_style: [],
+			car_parts_id: [],
+			car_color: [],
+			car_condition_id: [],
+			pointNum: '',
+			pointData: [],
+			chekuangMs: '',
+			minPriceV: ''
+		}
+	},
 	mutations: {
 		init(state){
-			Vue.set(state,'data',{
-				fengmian: '',
-				photos: '',
-			})
+			state.data.fengmian = '';
+			state.data.photos = '';
+			state.data.brand.text = '';
+			state.data.brand.id = '';
+			state.data.series.text = '';
+			state.data.series.id = '';
+			state.data.spec.text = '';
+			state.data.spec.id = '';
+			state.data.color.text = '';
+			state.data.color.id = '';
+			state.data.transmissioncase.text = '';
+			state.data.transmissioncase.id = '';
 		},
 		uploadImg(state,params){
 			state.data.fengmian = params.fengmian;
 			state.data.photos = params.photos;
+		},
+		changeBrand(state,params){
+			state.data.brand.text = params.brandName;
+			state.data.brand.id = params.brandId;
+			state.data.series.text = params.seriesName;
+			state.data.series.id = params.seriesId;
+			state.data.spec.text = params.specName;
+			state.data.spec.id = params.specId;
+		},
+		changeColor(state,params){
+			state.data.color.text = params.colorName;
+			state.data.color.id = params.colorId;
+		},
+		biansuxiang(state,params){
+			state.data.transmissioncase.text = params.val;
+			state.data.transmissioncase.id = params.id;
+		},
+		changeMarket(state,params){
+			state.data.market.text = params.marketName;
+			state.data.market.id = params.marketId;
+		},
+		changeVin(state,params){
+			state.data.vin = params.vin;
+		},
+		changePL(state,params){
+			state.data.pailiang = params.pailiang;
+		},
+		changeLC(state,params){
+			state.data.licheng = params.licheng;
+		},
+		changePoint(state,params){
+			state.data.car_color_id = params.car_color_id;
+			state.data.car_des = params.car_des;
+			state.data.car_style = params.car_style;
+			state.data.car_parts_id = params.car_parts_id;
+			state.data.car_color = params.car_color;
+			state.data.car_condition_id = params.car_condition_id;
+			state.data.pointNum = params.pointNum;
+			state.data.pointData = params.pointData;
+		},
+		changeMs(state,params){
+			state.data.chekuangMs = params.chekuangMs;
+		},
+		changeSHJ(state,params){
+			state.data.minPriceV = params.minPriceV;
 		}
 		
 	},

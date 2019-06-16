@@ -2,11 +2,11 @@
 	<div class="tishiContainer" ref="tishiContainer">
 		<div class="mask"></div>
 		<div class="container">
-			<img src="../assets/images/toastClose.png" class="toastClose" @click="close()">
+			<img src="../../assets/images/toastClose.png" class="toastClose" @click="close()">
 			<p class="toastImg">
-				<img src="../assets/images/toastSuccess.png" v-if="typeName == 'success'">
-				<img src="../assets/images/toastWarning.png" v-else-if="typeName == 'warning'">
-				<img src="../assets/images/toastError.png" v-else="typeName == 'error'">
+				<img src="../../assets/images/toastSuccess.png" v-if="typeName == 'success'">
+				<img src="../../assets/images/toastWarning.png" v-else-if="typeName == 'warning'">
+				<img src="../../assets/images/toastError.png" v-else="typeName == 'error'">
 			</p>
 			<p class="toastText">{{message}}</p>
 		</div>

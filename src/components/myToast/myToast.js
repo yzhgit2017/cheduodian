@@ -1,7 +1,7 @@
 import Vue from 'vue';
 
 //不加.default会报template or render in not define的错
-const ToastConstructor = Vue.extend(require('../components/toast.vue').default);
+const ToastConstructor = Vue.extend(require('./myToast.vue').default);
 
 let removeDom = el => {
   if (el.parentNode) {
@@ -9,7 +9,7 @@ let removeDom = el => {
   }
 };
 
-let Toast = function(options) {
+let myToast = function(options) {
 	let instance = new ToastConstructor()
 	let vm = instance.$mount()
   let el = vm.$el
@@ -22,4 +22,4 @@ let Toast = function(options) {
   }, 2000)
 }
 
-export default Toast;
+export default myToast;

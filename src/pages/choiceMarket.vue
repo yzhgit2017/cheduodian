@@ -96,6 +96,8 @@
 			choice: function(id,name){
 				if(this.$route.query.from == 'filter'){
 					this.$store.commit('filterCondition/changeMarket',{marketId: id, marketName: name});
+				}else if(this.$route.query.from == 'publishVehicle'){
+					this.$store.commit('publishCondition/changeMarket',{marketId: id, marketName: name});
 				}else{
 					this.$store.commit('vehicleList/changeMarket',{marketId: id, marketName: name});
 				}

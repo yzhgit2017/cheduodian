@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-const ToastConstructor = Vue.extend(require('../components/toast1.vue').default);
+const ToastConstructor = Vue.extend(require('./toast.vue').default);
 
 let removeDom = el => {
   if (el.parentNode) {
@@ -8,7 +8,7 @@ let removeDom = el => {
   }
 };
 
-let Toast1 = function(options) {
+let Toast = function(options) {
   if(document.querySelector(".tishiContainer1")){
     
   }else{
@@ -25,4 +25,4 @@ let Toast1 = function(options) {
 	
 }
 
-export default Toast1;
+export default Toast;

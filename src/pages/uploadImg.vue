@@ -39,7 +39,7 @@
 		data(){
 			return {
 				title: '上传图片',
-				uploadImgData: ["../../static/images/car3.png","../../static/images/car4.png"],
+				uploadImgData: [],
 				http: this.$http,
 				num: 0,
 				startTime: '',
@@ -57,7 +57,7 @@
 				if(this.uploadImgData.length < 16){
 					this.$refs.uploadFile.click();
 				}else{
-					this.$toast1({
+					this.$toast({
 						message: '最多上传16张图片'
 					})
 				}
@@ -90,7 +90,7 @@
 							})
 							that.num++;
 			        	}else{
-			        		this.$toast1({
+			        		this.$toast({
 								message: '你选择的图片数量超出最大上传数'
 							})
 							return false
@@ -152,13 +152,13 @@
 			},
 			save: function(){
 				if(this.uploadImgData.length < 6){
-					this.$toast1({
+					this.$toast({
 						message: '最少上传6张图片'
 					})
 					return false;
 				}
 				let fengmian;
-				let photos;
+				let photos = [];
 				for (let i = 0; i < this.uploadImgData.length; i++) {
    					if(this.uploadImgData[i].type == 1){
    						fengmian = this.uploadImgData[i].url;
@@ -166,6 +166,7 @@
    					photos.push(this.uploadImgData[i].url);
    				}
 				this.$store.commit('publishCondition/uploadImg',{fengmian: fengmian, photos: photos});
+				this.$router.goBack();
 			}
 		}
 	}

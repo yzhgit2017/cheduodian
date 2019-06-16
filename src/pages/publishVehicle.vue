@@ -2,7 +2,7 @@
 	<div class="container">
 		<header1 v-bind:title="title">
 			<template v-slot:navRightBtn>
-				<label style="font-size: .32rem;color: #FF620C;" @click="confirm()">发布</label>
+				<label style="font-size: .32rem;color: #FF620C;" @click="lijifache()">发布</label>
 			</template>
 		</header1>
 		<div class="pad"></div>
@@ -16,14 +16,14 @@
 		</div>
 		<div class="qiutit">基本信息</div>
 		<input type="file" name="" style="display: none;">
-		<p class="weibotime">VIN码<span class="shuvin vin_i_w"><input type="text" placeholder="输入VIN码或选择图片识别"/><img src="../assets/images/xiangji1.png" class="xiangji1" /></span></p>
-		<p class="weibotime">品牌型号<span class="shuvin"><span class="brandText">请选择</span><i class="icon iconfont icon-youjiantou"></i></span></p>
-		<p class="weibotime">车身颜色<span class="shuvin"><span>请选择</span><i class="icon iconfont icon-youjiantou"></i></span></p>
-		<p class="weibotime">排量<span class="shuvins"><input type="text" placeholder="请输入排量" /><select style="background: none;"><option>L</option><option>T</option></select></span></p>
-		<p class="weibotime">上牌日期<span class="shuvin otcol"><span>请选择</span><i class="icon iconfont icon-youjiantou"></i></span></p>
-		<p class="weibotime">行驶里程<span class="shuvins"><input type="text" placeholder="请输入公里数"/>万公里</span></p>
-		<p class="weibotime">变速箱<span class="shuvin"><span>请选择</span><i class="icon iconfont icon-youjiantou"></i></span></p>
-		<p class="weibotime">车辆用途<span class="shuvins"><small>非营运</small><small>营转非</small></span></p>
+		<p class="weibotime">VIN码<span class="shuvin vin_i_w"><input type="text" placeholder="输入VIN码或选择图片识别" @blur="changeVin()" v-model="vinV"/><img src="../assets/images/xiangji1.png" class="xiangji1" /></span></p>
+		<router-link :to="{path: 'choiceBrand', query: {from: 'publishVehicle'}}" class="weibotime">品牌型号<span class="shuvin"><span class="brandText">{{pinpai}}</span><i class="icon iconfont icon-youjiantou"></i></span></router-link>
+		<router-link :to="{path: 'choiceColor', query: {from: 'publishVehicle'}}" class="weibotime">车身颜色<span class="shuvin"><span>{{colorText}}</span><i class="icon iconfont icon-youjiantou"></i></span></router-link>
+		<p class="weibotime">排量<span class="shuvins"><input type="text" placeholder="请输入排量" @keyup="pailiang()" @blur="changePL()" v-model="pailiangV"/><select style="background: none;"><option>L</option><option>T</option></select></span></p>
+		<p class="weibotime">上牌日期<span class="shuvin otcol"><span @click="showPicker()">{{dateText}}</span><i class="icon iconfont icon-youjiantou"></i></span></p>
+		<p class="weibotime">行驶里程<span class="shuvins"><input type="text" placeholder="请输入公里数" @keyup="licheng()" @blur="changeLC()" v-model="lichengV"/>万公里</span></p>
+		<router-link :to="{path: 'biansuxiang', query: {from: 'publishVehicle'}}" class="weibotime">变速箱<span class="shuvin"><span>请选择</span><i class="icon iconfont icon-youjiantou"></i></span></router-link>
+		<p class="weibotime">车辆用途<span class="shuvins"><small @click="choiceYt(1)" v-bind:class="[yt == 1 ? 'checked' : '']">非营运</small><small @click="choiceYt(2)" v-bind:class="[yt == 2 ? 'checked' : '']">营转非</small></span></p>
 		<div class="qiutit">车况信息</div>
 		<p class="chektit">请选择相应颜色后点击于车辆剖面图上</p>
 		<div class="myCanvas" ref="myCanvas">
@@ -41,7 +41,7 @@
 			<div style="position: absolute;width: 114px;height: 66px;top: 58px;right: 103px;" @touchstart="drawPoint('前引擎盖',11)"></div>
 			<div style="position: absolute;width: 63px;height: 92px;top: 157px;right: 128px;" @touchstart="drawPoint('车顶',12)"></div>
 			<div style="position: absolute;width: 114px;height: 54px;top: 279px;right: 102px;" @touchstart="drawPoint('后备箱盖',13)"></div>
-			<div class="chekuangbiaoshi" v-for="(item,index) in pointData" :key="index" :style="{'left':item.x + 'px','top':item.y + 'px','background-color':item.color}"></div>
+			<div class="chekuangbiaoshi" v-for="(item,index) in pointData" :key="index" :style="{'left':item.x + 'px','top':item.y + 'px','background-color':item.color}" @touchstart="delPoint(index)"></div>
 		</div>
 		<div class="choice_chekuang">
 			<div class="item">
@@ -63,19 +63,65 @@
 		</div>
 		<div class="tishi" v-show="tishiShow">{{tishiText}}</div>
 		<p class="chektit">车况描述</p>
-		<div class="desWrapper"><textarea placeholder="请输入车况描述"></textarea></div>
+		<div class="desWrapper"><textarea placeholder="请输入车况描述" @blur="changeMs()" v-model="chekuangMs"></textarea></div>
 	    <div class="qiutit">销售信息</div>
-	    <p class="weibotime">最低售价<span class="shuvins"><input type="text" placeholder="请输入价格" />万元</span></p>
-	    <p class="weibotime">所属市场<span class="shuvin otcol"><span>请选择</span><i class="icon iconfont icon-youjiantou"></i></span></p>
-	    <p class="weibotime">批发<span class="pifa active"><label class="radio"></label><label class="text">批发</label></span><span class="pifa"><label class="radio"></label><label class="text">不批发</label></span></p>
-	    <p class="weibotime pifajia">批发价<span class="shuvins"><input type="text" placeholder="请输入价格" />万元</span></p>
+	    <p class="weibotime">最低售价<span class="shuvins"><input type="text" placeholder="请输入价格" @keyup="minPrice()" @blur="changeSHJ()" v-model="minPriceV"/>万元</span></p>
+	    <p class="weibotime" @click="choiceMarket()">所属市场<span class="shuvin otcol"><span>{{marketText}}</span><i class="icon iconfont icon-youjiantou"></i></span></p>
+	    <p class="weibotime">批发<span class="pifa" v-bind:class="[pifaV == 1 ? 'active' : '']"><label class="radio" @click="pifa(1)"></label><label class="text">批发</label></span><span class="pifa" v-bind:class="[pifaV == 2 ? 'active' : '']"><label class="radio" @click="pifa(2)"></label><label class="text">不批发</label></span></p>
+	    <p class="weibotime pifajia" v-show="pifaV == 1">批发价<span class="shuvins"><input type="text" placeholder="请输入价格" />万元</span></p>
 	    <div style="height: 0.98rem;"></div>
-	    <div class="publishButton">立即发车</div>
+	    <div class="publishButton" @click="lijifache()">立即发车</div>
+	    <div class="myPicker" v-show="pickerShow">
+	    	<div class="myPickerC">
+	    		<div class="caozuo"><div class="cancel" @click="closePicker()">取消</div><div class="confirm" @click="choicePicker()">确定</div></div>
+	    		<mt-picker :slots="addressSlots" @change="onAddressChange" :visible-item-count="3"></mt-picker>
+	    	</div>
+	    </div>
+	    <!-- 发车弹窗 -->
+	    <div class="myPopup" v-show="fachetan">
+			<div class="container">
+				<div class="section1">是否悬赏急售<i class="icon iconfont icon-cuowu guanbi" @click="guanbi()"></i></div>
+				<div class="section2">
+					<p class="p1">悬赏急售可大幅提高本车曝光率及帮卖动力！</p>
+					<p class="p2">提示：</p>
+					<p class="p2">1.每次悬赏急售，自动扣除2多币；</p>
+					<p class="p2">2.若多币不足，请去活动中心领取后重新发布或普通发布!</p>
+				</div>
+				<div class="section3"><span class="xquxiao putongfabu" id="putongfabu">普通发布</span><a href="javascript:;" @click="xuanshangfabu()">悬赏发布</a></div>
+			</div>
+	  	</div>
 	</div>
 </template>
 
 <script>
     import header1 from '../components/header1'
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    console.log(year,month)
+   	const address = {};
+    for (let i = 0; i < 10; i++) {
+    	if(i == 0){
+    		const curMonths = [];
+    		for (let j = 0; j < month; j++) {
+    			if(j < 9){
+    				const _month = "0" + (j + 1);
+    				curMonths.push(_month)
+    			}else{
+    				const _month = j + 1;
+    				curMonths.push(_month.toString())
+    			}
+    		}
+    		const _year = year;
+    		_year.toString();
+    		address[_year] = curMonths;
+    	}else{
+    		const _year = year - i;
+    		_year.toString();
+    		address[_year] = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+    	}
+    }
+    // console.log(Object.keys(address).reverse())
 	export default{
 		name: 'publishVehicle',
 		data(){
@@ -86,12 +132,70 @@
 				tishiTimer: '',
 				tishiText: '',
 				tishiShow: false,
-				pointData: []
+				pointData: [],
+				pinpai: '请选择',
+				colorText: '请选择',
+				dateText: '请选择',
+				pailiangV: '',
+				lichengV: '',
+				addressSlots: [
+		          {
+		            flex: 1,
+		            divider: true,
+		            content: '',
+		            className: 'slot1'
+		          },
+		          {
+		            flex: 2,
+		            values: Object.keys(address).reverse(),
+		            className: 'slot1',
+		            textAlign: 'center'
+		          }, {
+		            flex: 1,
+		            divider: true,
+		            content: '年',
+		            className: 'slot1'
+		          }, {
+		            flex: 2,
+		            values: address[year],
+		            className: 'slot1',
+		            textAlign: 'center'
+		          },{
+		            flex: 1,
+		            divider: true,
+		            content: '月',
+		            className: 'slot1'
+		          },{
+		            flex: 1,
+		            divider: true,
+		            content: '',
+		            className: 'slot1'
+		          }
+		        ],
+		        pickerShow: false,
+		        shpyear: '',
+		        shpmonth: '',
+		        yt: '',
+		        chekuangMs: '',
+		        minPriceV: '',
+		        marketText: '',
+		        pifaV: 1,
+		        fachetan: false,
+		        token: localStorage.getItem('myToken'),
+		        vinV: '',
+		        colorId: '',
+		        car_color_id: [],
+				car_des: [],
+				car_style: [],
+				car_parts_id: [],
+				car_color: [],
+				car_condition_id: [],
+				pointNum: 0
 			}
 		},
 		components: { header1},
 		mounted(){
-
+			this.loadData()
 		},
 		computed: {
 		    publishData(){
@@ -99,21 +203,89 @@
 		    }
 		},
 		methods: {
+			loadData: function(){
+				let initData = this.publishData.data;
+				console.log(initData)
+				let brandText = '';
+				if(initData.brand.id == ''){
+					
+				}else if(initData.brand.id == 0){
+					brandText = '不限';
+				}else{
+					brandText = initData.brand.text;
+				};
+				if(initData.series.id == '' || initData.series.id == 0){
+					
+				}else{
+					brandText += '-' + initData.series.text;
+				};
+				if(initData.spec.id == '' || initData.spec.id == 0){
+
+				}else{
+					brandText += '-' + initData.spec.text;
+				};
+				if(brandText != ''){
+					console.log(brandText)
+					this.pinpai = brandText;
+				}
+				if(initData.color.id == '' || initData.color.id == 0){
+					this.colorText = '请选择';
+				}else{
+					this.colorText = initData.color.text;
+				};
+				if(initData.market.text == ''){
+					this.marketText = '请选择';
+				}else{
+					this.marketText = initData.market.text;
+				};
+				this.vinV = initData.vin;
+				this.pailiangV = initData.pailiang;
+				this.lichengV = initData.licheng;
+				this.car_color_id = initData.car_color_id;
+				this.car_des = initData.car_des;
+				this.car_style = initData.car_style;
+				this.car_parts_id = initData.car_parts_id;
+				this.car_color = initData.car_color;
+				this.car_condition_id = initData.car_condition_id;
+				this.pointNum = initData.pointNum;
+				this.pointData = initData.pointData;
+				this.chekuangMs = initData.chekuangMs;
+				this.minPriceV = initData.minPriceV;
+			},
+			changeVin: function(){
+				this.$store.commit("publishCondition/changeVin",{vin :this.vinV})
+			},
+			changePL: function(){
+				this.$store.commit("publishCondition/changePL",{pailiang :this.pailiangV})
+			},
+			changeLC: function(){
+				this.$store.commit("publishCondition/changeLC",{licheng :this.lichengV})
+			},
+			changeMs: function(){
+				this.$store.commit("publishCondition/changeMs",{chekuangMs :this.chekuangMs})
+			},
+			changeSHJ: function(){
+				this.$store.commit("publishCondition/changeSHJ",{minPriceV :this.minPriceV})
+			},
 			choiceColor: function(type){
 				const that = this;
 				if(type == "penqi"){
+					this.colorId = 1;
 					this.chekuangColor = "#4FC473";
 					this.tishiText = "颜色选择成功";
 				}
 				if(type == "banji"){
+					this.colorId = 2;
 					this.chekuangColor = "#FCC022";
 					this.tishiText = "颜色选择成功";
 				}
 				if(type == "shigu"){
+					this.colorId = 3;
 					this.chekuangColor = "#FF2F2F";
 					this.tishiText = "颜色选择成功";
 				}
 				if(type == "xiangpica"){
+					this.colorId = '';
 					this.chekuangColor = "";
 					this.tishiText = "橡皮擦工具";
 				}
@@ -136,12 +308,98 @@
 					item.y = pt;
 					item.color = this.chekuangColor;
 					this.pointData.push(item)
-					
+					const style = "left:"+ item.x +"px;top:" + item.y +"px;background-color:"+ item.color +"";
+					this.car_color_id.push(this.colorId);
+					this.car_des.push(pot);
+					this.car_style.push(style);
+					this.car_parts_id.push(desid);
+					this.car_color.push(this.chekuangColor);
+					this.car_condition_id.push("point_"+ this.pointNum +"");
+					this.pointNum++;
+					this.$store.commit('publishCondition/changePoint',{pointData: this.pointData,car_color_id: this.car_color_id,car_des: this.car_des,car_style: this.car_style,car_parts_id: this.car_parts_id,car_color: this.car_color,car_condition_id: this.car_condition_id,pointNum: this.pointNum});
+				}
+			},
+			delPoint: function(index){
+				if(this.tishiText == "橡皮擦工具"){
+					this.pointData.splice(index,1);
+					this.car_color_id.splice(index,1);
+					this.car_des.splice(index,1);
+					this.car_style.splice(index,1);
+					this.car_parts_id.splice(index,1);
+					this.car_color.splice(index,1);
+					this.car_condition_id.splice(index,1);
+					this.$store.commit('publishCondition/changePoint',{pointData: this.pointData,car_color_id: this.car_color_id,car_des: this.car_des,car_style: this.car_style,car_parts_id: this.car_parts_id,car_color: this.car_color,car_condition_id: this.car_condition_id});
 				}
 			},
 			gouploadImg: function(){
 				this.$router.push("/uploadImg");
-			}
+			},
+			pailiang: function(){
+				this.pailiangV = this.pailiangV.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符   
+				this.pailiangV = this.pailiangV.replace(/^(\-)*(\d+)\.(\d).*$/,'$1$2.$3');//只能输入两个小数   
+				if(this.pailiangV.indexOf(".")< 0 && this.pailiangV !=""){
+				   //以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额  
+				   this.pailiangV = parseFloat(this.pailiangV);  
+				}
+			},
+			onAddressChange(picker, values) {
+		        picker.setSlotValues(1, address[values[0]]);
+		        this.shpyear = values[0];
+		        this.shpmonth = values[1];
+		    },
+		    showPicker: function(){
+		    	this.pickerShow = true;
+		    },
+		    choicePicker: function(){
+		    	console.log(this.shpyear,this.shpmonth)
+		    	const date = this.shpyear + "-" + this.shpmonth;
+		    	this.dateText = date;
+		    	this.pickerShow = false;
+		    },
+		    licheng: function () {
+		    	this.lichengV = this.lichengV.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符   
+				this.lichengV = this.lichengV.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数   
+				if(this.lichengV.indexOf(".")< 0 && this.lichengV !=""){
+				   //以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额  
+				   this.lichengV = parseFloat(this.lichengV);  
+				}  
+		    },
+		    choiceYt: function (bs) {
+		    	this.yt = bs;
+		    },
+		    minPrice: function () {
+		    	this.minPriceV = this.minPriceV.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符   
+				this.minPriceV = this.minPriceV.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数   
+				if(this.minPriceV.indexOf(".")< 0 && this.minPriceV !=""){
+				   //以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额  
+				   this.minPriceV = parseFloat(this.minPriceV);  
+				}
+		    },
+		    choiceMarket: function () {
+		    	this.$store.commit('vehicleList/changePAC',{provinceId: localStorage.getItem('myProvinceId'),cityText: localStorage.getItem('myRoomCity'),cityId: localStorage.getItem('myRoomCityId')})
+				this.$router.push({path: 'choiceMarket', query: {from: 'publishVehicle'}});
+		    },
+		    pifa: function (bs) {
+		    	this.pifaV = bs;
+		    },
+		    lijifache: function () {
+		    	this.fachetan = true;
+		    },
+		    guanbi: function () {
+		    	this.fachetan = false;
+		    },
+		    xuanshangfabu: function () {
+		    	var _this = this;
+				this.$fetchPost('/SurplusMoney',{token: this.token,keys:"urgent_sale_money",money:2}).then(function(res){
+					console.log(res)
+				    if(res.code == 218){
+				    	// 多币不足
+				    }
+					if(res.code == 1){
+						// 多币充足
+					}
+				})
+		    }
 		}
 	}
 </script>
@@ -154,7 +412,7 @@
 	.fabui{
 		height: 5.63rem;
 		overflow: hidden;
-		background: url("../assets/images/findbg.png") no-repeat;
+		background: url("../../static/images/findbg.png") no-repeat;
 		background-size: cover;
 		position: relative;
 	}
@@ -195,6 +453,7 @@
 	    height: 0.88rem;
 	    border-bottom: 1px solid #EFEFEF;
         overflow: hidden;
+        display: block;
 	}
 	.shuvin, .shuvins {
 	    float: right;
@@ -282,6 +541,11 @@
 	    border-radius: 0.25rem;
 	    color: #8A8F9B;
 	    margin-left: 0.2rem;
+	}
+	.shuvins small.checked {
+	    color: #FFFFFF;
+	    background: #FF620C;
+	    border-color: #FF620C;
 	}
 	.chektit {
 	    font-size: 0.28rem;
@@ -386,5 +650,132 @@
 	    z-index: 9;
 	    color: #FFFFFF;
         font-size: 0.32rem;
+	}
+	.myPicker{
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		background: rgba(0,0,0,0.5);
+		z-index: 999;
+	}
+	.myPickerC{
+		width: 100%;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+	}
+	.myPickerC .caozuo{
+		height: 36px;
+		width: 100%;
+		display: flex;
+		display: -webkit-flex;
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+		align-items: center;
+		-webkit-align-items: center;
+		background: #ffffff;
+		border-bottom: 1px solid #eaeaea;
+		box-sizing: border-box;
+	}
+	.myPickerC .caozuo .cancel{
+		font-size: 16px;
+        font-weight: bold;
+        color: #999999;
+        margin-left: 20px;
+	}
+	.myPickerC .caozuo .confirm{
+		font-size: 16px;
+        font-weight: bold;
+        color: #FF620C;
+        margin-right: 20px;
+	}
+	.picker{
+		background: #ffffff;
+		padding-bottom: 36px;
+	}
+	.myPopup {
+	    position: fixed;
+	    height: 100%;
+	    width: 100%;
+	    top: 0;
+	    left: 0;
+	    background-color: rgba(0,0,0,0.3);
+	    z-index: 99999;
+	}
+	.myPopup .container {
+	    position: absolute;
+	    width: 5.92rem;
+	    height: auto;
+	    left: 50%;
+	    margin-left: -2.96rem;
+	    top: 50%;
+	    transform: translateY(-50%);
+	    -ms-transform: translateY(-50%);
+	    -moz-transform: translateY(-50%);
+	    -webkit-transform: translateY(-50%);
+	    -o-transform: translateY(-50%);
+	    background: #fff;
+	    border-radius: 0.1rem;
+	    overflow: hidden;
+	}
+	.myPopup .container .section1 {
+	    line-height: 0.86rem;
+	    height: 0.86rem;
+	    font-size: 0.3rem;
+	    color: #000000;
+	    padding: 0 0.41rem;
+	    background: #EEEFF0;
+	}
+	.myPopup .container .section2 {
+	    padding: 0.43rem 0.53rem;
+	    box-sizing: border-box;
+	    background: #fff;
+	}
+	.myPopup .container .section2 .p1 {
+	    font-size: 0.3rem;
+	    color: #FF620C;
+	    line-height: 0.48rem;
+	}
+	.myPopup .container .section2 .p2 {
+	    font-size: 0.3rem;
+	    color: #000;
+	    line-height: 0.48rem;
+	}
+	.myPopup .container .section3 {
+	    width: 100%;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    text-align: center;
+	    overflow: hidden;
+	}
+	.xquxiao {
+	    width: 50%;
+	    height: 100%;
+	    float: left;
+	    background: #FFFFFF;
+	    border-bottom-left-radius: 0.1rem;
+	    font-size: 0.3rem;
+	    color: #8A8F9B;
+	    border-top: 1px solid #EFEFEF;
+	    box-sizing: border-box;
+	}
+	.myPopup .container .section3 a {
+	    color: #FFFFFF;
+	    font-size: 0.3rem;
+	    background: #FF620C;
+	    width: 50%;
+	    height: 100%;
+	    text-align: center;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    float: left;
+	    border-top: 1px solid #FF620C;
+	}
+	.guanbi {
+	    float: right;
+	    font-size: 0.4rem !important;
+	    color: #666666;
 	}
 </style>

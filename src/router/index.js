@@ -3,7 +3,6 @@ import Router from 'vue-router'
 import homePage from '@/pages/homePage'
 import personalPage from '@/pages/personalPage'
 import findVehicle from '@/pages/findVehicle'
-import test from '@/pages/test'
 import vehicleType from '@/pages/vehicleType'
 import index from '@/pages/index'
 import login from '@/pages/login'
@@ -60,14 +59,6 @@ export default new Router({
       component: findVehicle,
       meta: {
         keepAlive: true
-      }
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: test,
-      meta: {
-        keepAlive: false
       }
     },
     {

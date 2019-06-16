@@ -7,18 +7,18 @@ import '@/assets/css/common.css'
 import '@/assets/js/rem.js'
 import store from './store'
 import {fetchPost,fetchGet} from './util/http'
-import Toast from './util/toast'
-import Toast1 from './util/toast1'
-import singleImgZoom from './util/singleImgZoom'
+import myToast from '@/components/myToast/myToast'
+import Toast from '@/components/toast/toast'
+import singleImgZoom from '@/components/singleImgZoom/singleImgZoom'
 import swiperImgZoom from '@/components/swiperImgZoom/swiperImgZoom'
-import { loadmore, spinner } from 'mint-ui'
+import { loadmore, spinner, picker } from 'mint-ui'
 
 Vue.config.productionTip = false
 
 Vue.prototype.$fetchPost = fetchPost
 Vue.prototype.$fetchGet = fetchGet
+Vue.prototype.$myToast = myToast
 Vue.prototype.$toast = Toast
-Vue.prototype.$toast1 = Toast1
 Vue.prototype.$singleImgZoom = singleImgZoom
 Vue.prototype.$swiperImgZoom = swiperImgZoom
 Vue.prototype.$http = 'http://cheduodian.mcbn.cn'
@@ -26,6 +26,7 @@ Vue.prototype.$http = 'http://cheduodian.mcbn.cn'
 
 Vue.component(loadmore.name, loadmore)
 Vue.component(spinner.name, spinner)
+Vue.component(picker.name, picker)
 
 /* eslint-disable no-new */
 new Vue({

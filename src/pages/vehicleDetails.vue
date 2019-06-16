@@ -129,6 +129,8 @@
 			},
 			imgAllScreen: function(index){
 				let _index = parseInt(index)
+				// event.preventDefault();
+				// event.stopPropagation();
 				this.$swiperImgZoom({
 					data: this.imgData,
 					index: _index
@@ -143,7 +145,7 @@
 						this.$fetchPost('/doCollection',data).then(function(res){
 							console.log(res)
 							if(res.code == 1){
-								that.$toast({
+								that.$myToast({
 									message: '取消成功',
 									type: 'success'
 								})
@@ -157,7 +159,7 @@
 						this.$fetchPost('/doCollection',data).then(function(res){
 							console.log(res)
 							if(res.code == 1){
-								that.$toast({
+								that.$myToast({
 									message: '收藏成功',
 									type: 'success'
 								})
@@ -377,7 +379,7 @@
 	    text-align: center;
 	    height: 0.98rem;
 	    line-height: 0.98rem;
-	    position: absolute;
+	    position: fixed;
 	    bottom: 0;
 	    z-index: 9;
 	}

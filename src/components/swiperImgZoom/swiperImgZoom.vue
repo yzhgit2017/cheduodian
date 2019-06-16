@@ -5,7 +5,9 @@
             <div class="swiper-wrapper" :style="{ width: wrapperWidth + 'px' }" id="swiper-check-wrapper">
                 <div class="swiper-slide" :style="{ width: slideWidth + 'px' }" v-for="(item,index) in data" @click="closeAllScreen()"><img :src="http + item" @touchstart="scalestart(index)" @touchmove="scalemove(index)" @touchend="scaleend(index)" :id="'quanpingtu' + index" @load="imgLoad(index)"></div>
             </div>
-            <div class="swiper-pagination"></div>
+            <div class="swiper-pagination">
+            	<span v-for="(item,index) in data" :class="[currentDot == index?'active':'']"></span>
+            </div>
         </div>
 	</div>
 </template>
@@ -35,23 +37,36 @@
 				cx: '',
 				tl: 150,
 				ccw: '',
-				imgData: []
+				imgData: [],
+				timer: '',
+				currentDot: ''
 			}
 		},
 		mounted(){
-
+			
 		},
 		updated: function(){
-			console.log(this.data)
-			let iw = this.$refs.swiperZoomContainer.clientWidth;
-			this.slideWidth = iw;
-			this.wrapperWidth = this.data.length * iw;
-			this.cw = iw;
+			
+		},
+		watch: {
+			data: function(){
+				console.log(this.data)
+				let iw = this.$refs.swiperZoomContainer.clientWidth;
+				this.slideWidth = iw;
+				this.wrapperWidth = this.data.length * iw;
+				this.cw = iw;
+				this.init();
+			}
 		},
 		methods: {
-			
+			init: function(){
+				let cl = this.slideWidth * -this.currentIndex;
+				this.currentDot = this.currentIndex;
+				this.cl = cl;
+				document.getElementById("swiper-check-wrapper").style.transform = "translateX("+ cl +"px)";
+			},
 			scalestart: function(index){
-				event.preventDefault();
+				document.body.style.overflow = "hidden";
 				this.move = false;
 				this.startPositions = event.targetTouches;
 				this.touchIndex = index;
@@ -75,6 +90,7 @@
                 this.tx = this.cl;
 			},
 			scalemove: function(index){
+
 				this.move = true;
 				let quanpingtu = "quanpingtu" + index;
 				if(this.fingerNum == "one"){
@@ -83,6 +99,7 @@
 					let mx1 = event.targetTouches[0].pageX;
 					let my1 = event.targetTouches[0].pageY;
 					let cx = mx1 - sx1;
+
 					this.cx = cx;
 					let cy = my1 - sy1;
 					let tx = this.tx;
@@ -132,6 +149,7 @@
 				}
 			},
 			scaleend: function(index){
+				document.body.style.overflow = "auto";
 				this.endPositions = this.startPositions
 				let quanpingtu = "quanpingtu" + index;
 				if(this.changef < 0.8){
@@ -139,8 +157,13 @@
 					document.getElementById(quanpingtu).style.transform = "scale(1)"
 				}
 				if(this.fingerNum == "one"){
+					
 					if(!this.move){
-						this.$refs.swiperZoomContainer.parentNode.removeChild(this.$refs.swiperZoomContainer)
+						clearTimeout(this.timer);
+						let that = this;
+						this.timer = setTimeout(function(){
+							that.$refs.swiperZoomContainer.parentNode.removeChild(that.$refs.swiperZoomContainer)
+						},310)
 					}else{
 						
 						let cl;
@@ -149,23 +172,26 @@
 							if(this.cx > this.slideWidth * .5){
 								if(index == 0){
 									cl = this.slideWidth * -index
+									this.currentDot = index;
 								}else{
 									cl = this.slideWidth * -(index - 1);
 									this.changef = 1;
 									this.ccw = this.cw;
 									document.getElementById(quanpingtu).style.transform = "scale(1)";
 									document.getElementById(quanpingtu).style.left = this.imgData[index].ol + 'px';
-									document.getElementById(quanpingtu).style.top = this.imgData[index].ot + 'px';	
+									document.getElementById(quanpingtu).style.top = this.imgData[index].ot + 'px';
+									this.currentDot = index - 1;
 								}
 							}else{
 								cl = this.slideWidth * -index
-								
+								this.currentDot = index;
 							}
 						}else{
 							
 							if(this.cx < -this.slideWidth * .5){
 								if(index == this.data.length - 1){
 									cl = this.slideWidth * -index
+									this.currentDot = index;
 								}else{
 									cl = this.slideWidth * -(index +  1);
 									this.changef = 1;
@@ -173,10 +199,11 @@
 									document.getElementById(quanpingtu).style.transform = "scale(1)";
 									document.getElementById(quanpingtu).style.left = this.imgData[index].ol + 'px';
 									document.getElementById(quanpingtu).style.top = this.imgData[index].ot + 'px';
+									this.currentDot = index + 1;
 								}
 							}else{
 								cl = this.slideWidth * -index
-								
+								this.currentDot = index;
 							}
 						}
 						this.cl = cl;
@@ -216,6 +243,7 @@
 	    transition: all 0.2s ease 0;
 	    -webkit-transition: all 0.2s ease 0;
 	    overflow: hidden;
+	    pointer-events: auto;
 	}
 	.checkImg.active {
 	    transform: scale(1);
@@ -231,6 +259,7 @@
 	.swiper-check .swiper-slide img{
 		width: 100%;
 		position: absolute;
+		pointer-events: auto;
 	}
 	.swiper-check{
 		height: 100%;
@@ -253,25 +282,24 @@
 	#swiper-check-wrapper{
 		transition: transform 0s linear 0s;
 	}
-</style>
-
-<style>
-	#swiper-check .swiper-pagination-bullets .swiper-pagination-bullet {
-	    width: 0.2rem;
+	.swiper-pagination{
+		position: absolute;
+		width: 100%;
+		left: 0;
+		display: flex;
+		justify-content: center;
+		bottom: 0.5rem;
+	}
+	.swiper-pagination span{
+		width: 0.2rem;
 	    height: 0.2rem;
 	    border: none;
 	    background: #fff;
 	    opacity: 0.5;
-	    display: inline-block;
 	    border-radius: 100%;
-	    margin: 0 4px;
+		margin: 0 4px;
 	}
-	#swiper-check .swiper-pagination-bullets .swiper-pagination-bullet-active {
-	    background: #fff;
-	    opacity: 1;
-	}
-	#swiper-check .swiper-pagination-bullets {
-	    bottom: 0.5rem;
-
+	.swiper-pagination span.active{
+		opacity: 1;
 	}
 </style>

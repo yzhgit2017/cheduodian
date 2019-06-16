@@ -41,6 +41,8 @@
      			this.activeItem = index;
      			if(this.$route.query.from == 'filter'){
      				this.$store.commit('filterCondition/biansuxiang',{id: id, val: val});
+     			}else if(this.$route.query.from == 'publishVehicle'){
+     				this.$store.commit('publishCondition/biansuxiang',{id: id, val: val});
      			}else{
      				this.$store.commit('vehicleList/biansuxiang',{id: id, val: val});
      			}

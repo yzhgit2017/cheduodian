@@ -26,11 +26,9 @@
                             <div class="menu_img"><img src="../assets/images/cyfb.png"></div>
                             <p class="menu_text">车源发布</p>
 	                    </li>
-	                    <li>
-	                        <a href="seekVehicle.html">
-	                            <div class="menu_img"><img src="../assets/images/dkqg.png"></div>
-	                            <p class="menu_text">代客求购</p>
-	                        </a>
+	                    <li>	               
+                            <div class="menu_img"><img src="../assets/images/dkqg.png"></div>
+                            <p class="menu_text">代客求购</p>	                       
 	                    </li>
 	                    <li>
 	                        <a href="mendCheck.html">
@@ -92,6 +90,7 @@
 			goCityVehicle: function(){
 				this.$store.commit('vehicleList/init')
 				this.$router.push("/findVehicle/cityVehicle");
+				this.$store.commit('vehicleList/changePAC',{provinceId: localStorage.getItem('myProvinceId'),cityText: localStorage.getItem('myRoomCity'),cityId: localStorage.getItem('myRoomCityId')})
 			},
 			goWholesaleVehicle: function(){
 				this.$store.commit('vehicleList/init')
@@ -99,6 +98,8 @@
 				this.$router.push("/findVehicle/wholesaleVehicle");
 			},
 			goPublishVehicle: function(){
+				this.$store.commit('publishCondition/init')
+				this.$store.commit('vehicleList/changePAC',{provinceId: localStorage.getItem('myProvinceId'),cityText: localStorage.getItem('myRoomCity'),cityId: localStorage.getItem('myRoomCityId')})
 				this.$router.push("/publishVehicle");
 			}		
 		}
