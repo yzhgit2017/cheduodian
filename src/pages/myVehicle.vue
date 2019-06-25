@@ -65,7 +65,7 @@
 		name: 'myVehicle',
 		data(){
 			return {
-				title: '我的车源',
+				title: '我的车源11',
 				myVehicleData: [],
 				topStatus: '',
 		        wrapperHeight: 0,
