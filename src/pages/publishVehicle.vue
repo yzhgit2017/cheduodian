@@ -41,7 +41,7 @@
 			<div style="position: absolute;width: 114px;height: 66px;top: 58px;right: 103px;" @touchstart="drawPoint('前引擎盖',11)"></div>
 			<div style="position: absolute;width: 63px;height: 92px;top: 157px;right: 128px;" @touchstart="drawPoint('车顶',12)"></div>
 			<div style="position: absolute;width: 114px;height: 54px;top: 279px;right: 102px;" @touchstart="drawPoint('后备箱盖',13)"></div>
-			<div class="chekuangbiaoshi" v-for="(item,index) in pointData" :key="index" :style="{'left':item.x + 'px','top':item.y + 'px','background-color':item.color}" @touchstart="delPoint(index)"></div>
+			<div class="chekuangbiaoshi" v-for="(item,index) in pointData" :key="index" :style="item" @touchstart="delPoint(index)"></div>
 		</div>
 		<div class="choice_chekuang">
 			<div class="item">
@@ -68,7 +68,7 @@
 	    <p class="weibotime">最低售价<span class="shuvins"><input type="text" placeholder="请输入价格" @keyup="minPrice()" @blur="changeSHJ()" v-model="minPriceV"/>万元</span></p>
 	    <p class="weibotime" @click="choiceMarket()">所属市场<span class="shuvin otcol"><span>{{marketText}}</span><i class="icon iconfont icon-youjiantou"></i></span></p>
 	    <p class="weibotime">批发<span class="pifa" v-bind:class="[pifaV == 1 ? 'active' : '']"><label class="radio" @click="pifa(1)"></label><label class="text">批发</label></span><span class="pifa" v-bind:class="[pifaV == 2 ? 'active' : '']"><label class="radio" @click="pifa(2)"></label><label class="text">不批发</label></span></p>
-	    <p class="weibotime pifajia" v-show="pifaV == 1">批发价<span class="shuvins"><input type="text" placeholder="请输入价格" v-model="pifaPrice"/>万元</span></p>
+	    <p class="weibotime pifajia" v-show="pifaV == 1">批发价<span class="shuvins"><input type="text" placeholder="请输入价格" @keyup="pfPrice()" @blur="changePF()" v-model="pifaPrice"/>万元</span></p>
 	    <div style="height: 0.98rem;"></div>
 	    <div class="publishButton" @click="lijifache()">立即发车</div>
 	    <div class="myPicker" v-show="pickerShow">
@@ -205,7 +205,7 @@
 				bsx_id: '',
 				market_id: '',
 				pifaPrice: '',
-				p_unit: 'L'
+				p_unit: 'L',
 			}
 		},
 		components: { header1},
@@ -287,6 +287,7 @@
 				this.photos = initData.photos;
 				this.yt = initData.yt;
 				this.pifaV = initData.pifa;
+				this.pifaPrice = initData.pifajia;
 				if(initData.dateText == ''){
 					this.dateText = "请选择"
 				}else{
@@ -313,6 +314,9 @@
 			},
 			changeSHJ: function(){
 				this.$store.commit("publishCondition/changeSHJ",{minPriceV :this.minPriceV})
+			},
+			changePF: function(){
+				this.$store.commit("publishCondition/changePF",{pifajia :this.pifaPrice})
 			},
 			choiceColor: function(type){
 				const that = this;
@@ -350,12 +354,8 @@
 					const py = event.touches[0].pageY;
 					const pl = px - ol - 10;
 					const pt = py - ot - 10;
-					const item = {};
-					item.x = pl;
-					item.y = pt;
-					item.color = this.chekuangColor;
-					this.pointData.push(item)
-					const style = "left:"+ item.x +"px;top:" + item.y +"px;background-color:"+ item.color +"";
+					const style = "left:"+ pl +"px;top:" + pt +"px;background-color:"+ this.chekuangColor +"";
+					this.pointData.push(style);
 					this.car_color_id.push(this.colorId);
 					this.car_des.push(pot);
 					this.car_style.push(style);
@@ -424,6 +424,14 @@
 				   this.minPriceV = parseFloat(this.minPriceV);  
 				}
 		    },
+		    pfPrice: function(){
+		    	this.pifaPrice = this.pifaPrice.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符   
+				this.pifaPrice = this.pifaPrice.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数   
+				if(this.pifaPrice.indexOf(".")< 0 && this.pifaPrice !=""){
+				   //以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额  
+				   this.pifaPrice = parseFloat(this.pifaPrice);
+				}
+		    },
 		    choiceMarket: function () {
 		    	this.$store.commit('vehicleList/changePAC',{provinceId: localStorage.getItem('myProvinceId'),cityText: localStorage.getItem('myRoomCity'),cityId: localStorage.getItem('myRoomCityId')})
 				this.$router.push({path: 'choiceMarket', query: {from: 'publishVehicle'}});
@@ -433,7 +441,97 @@
 		    	this.$store.commit('publishCondition/changePifa',{pifa: this.pifaV});
 		    },
 		    lijifache: function () {
-		    	this.fachetan = true;
+		    	if(this.$route.query.from == 'myVehicle'){
+		    		let data;
+		    		let that = this;
+					let _photos = '';
+					for (let i = 0; i < that.photos.length; i++) {
+						if(i == 0){
+							_photos = _photos + that.photos[i];
+						}else{
+							_photos = _photos + ',' + that.photos[i]
+						}
+					}
+					if(that.pointData.length == 0){
+						data = {
+							vin_code: that.vinV,
+							token: that.token,
+							img: that.fengmian,
+							photos: _photos,
+							brand_id: that.brand_id,
+							series_id: that.series_id,
+							model_id: that.model_id,
+							color_id: that.color_id,
+							boarding_time: that.dateText,
+							driven_distance: that.lichengV,
+							gearbox: that.bsx_id,
+							uses: that.yt,
+							content: that.chekuangMs,
+							money: that.minPriceV,
+							province_id: localStorage.getItem("myProvinceId"),
+							room_city: localStorage.getItem("myRoomCityId"),
+							market_id: that.market_id,
+							wholesale: that.pifaV,
+							wholesale_money: that.pifaPrice,
+							pailiang: that.pailiangV,
+							p_unit: that.p_unit,
+							type: 5,
+							gid: this.$route.query.id
+						}
+					}else{
+						data = {
+							vin_code: that.vinV,
+							token: that.token,
+							img: that.fengmian,
+							photos: _photos,
+							brand_id: that.brand_id,
+							series_id: that.series_id,
+							model_id: that.model_id,
+							color_id: that.color_id,
+							boarding_time: that.dateText,
+							driven_distance: that.lichengV,
+							gearbox: that.bsx_id,
+							uses: that.yt,
+							content: that.chekuangMs,
+							money: that.minPriceV,
+							province_id: localStorage.getItem("myProvinceId"),
+							room_city: localStorage.getItem("myRoomCityId"),
+							market_id: that.market_id,
+							wholesale: that.pifaV,
+							wholesale_money: that.pifaPrice,
+							pailiang: that.pailiangV,
+							p_unit: that.p_unit,
+							type: 5,
+							car_color_id: that.car_color_id,
+							car_des: that.car_des,
+							car_style: that.car_style,
+							car_parts_id: that.car_parts_id,
+							car_color: that.car_color,
+							car_condition_id: this.publishData.data.car_condition_id,
+							car_id: [this.$route.query.id],
+							gid: this.$route.query.id
+						}
+						console.log(data)
+					}
+					that.$fetchPost('/updateCarSource',data).then(function(res){
+						console.log(res)
+						if(res.code == 1){
+							that.$myToast({
+								message: '编辑成功',
+								type: 'success'
+							})
+						}
+						if(res.code == 0){
+							that.$myToast({
+								message: res.msg,
+								type: 'error'
+							})
+						}
+					})
+		    	}else{
+		    		this.fachetan = true;
+		    	}
+		    	
 		    },
 		    guanbi: function () {
 		    	this.fachetan = false;
@@ -454,12 +552,21 @@
 				    }
 					if(res.code == 1){
 						// 多币充足
+						let data;
+						let _photos = '';
+						for (let i = 0; i < that.photos.length; i++) {
+							if(i == 0){
+								_photos = _photos + that.photos[i];
+							}else{
+								_photos = _photos + ',' + that.photos[i]
+							}
+						}
 						if(that.pointData.length == 0){
-							const data = {
+							data = {
 								vin_code: that.vinV,
 								token: that.token,
 								img: that.fengmian,
-								photos: that.photos,
+								photos: _photos,
 								brand_id: that.brand_id,
 								series_id: that.series_id,
 								model_id: that.model_id,
@@ -480,11 +587,11 @@
 								type: 5,
 							}
 						}else{
-							const data = {
+							data = {
 								vin_code: that.vinV,
 								token: that.token,
 								img: that.fengmian,
-								photos: that.photos,
+								photos: _photos,
 								brand_id: that.brand_id,
 								series_id: that.series_id,
 								model_id: that.model_id,
@@ -511,7 +618,21 @@
 							}
 							console.log(data)
 						}
-						
+						that.$fetchPost('/setCarSource',data).then(function(res){
+							console.log(res)
+							if(res.code == 1){
+								that.$myToast({
+									message: '发布成功',
+									type: 'success'
+								})
+							}
+							if(res.code == 0){
+								that.$myToast({
+									message: res.msg,
+									type: 'error'
+								})
+							}
+						})
 					}
 				})
 		    }

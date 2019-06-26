@@ -98,9 +98,43 @@
 				this.$router.push("/findVehicle/wholesaleVehicle");
 			},
 			goPublishVehicle: function(){
-				this.$store.commit('publishCondition/init')
+				const data = {
+					fengmian: '',
+					photos: [],
+					brandName: '',
+					brandId: '',
+					seriesName: '',
+					seriesId: '',
+					specName: '',
+					specId: '',
+					colorName: '',
+					colorId: '',
+					val: '',
+					id: '',
+					marketName: '',
+					marketId: '',
+					vin: '',
+					pailiang: '',
+					licheng: '',
+					car_color_id: [],
+					car_des: [],
+					car_style: [],
+					car_parts_id: [],
+					car_color: [],
+					car_condition_id: [],
+					pointNum: 0,
+					pointData: [],
+					chekuangMs: '',
+					minPriceV: '',
+					pifa: 1,
+					pifajia: '',
+					yt: '',
+					dateText: '',
+					p_unit: 'L'
+				}
+				this.$store.commit('publishCondition/init',data)
 				this.$store.commit('vehicleList/changePAC',{provinceId: localStorage.getItem('myProvinceId'),cityText: localStorage.getItem('myRoomCity'),cityId: localStorage.getItem('myRoomCityId')})
-				this.$router.push("/publishVehicle");
+				that.$router.push({path: '/publishVehicle', query: {from: 'homePage'}});
 			}		
 		}
 	}

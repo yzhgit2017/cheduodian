@@ -379,36 +379,44 @@ const publishCondition = {
 			pifa: 1,
 			yt: '',
 			dateText: '',
-			p_unit: 'L'
+			p_unit: 'L',
+			pifajia: ''
 		}
 	},
 	mutations: {
-		init(state){
-			state.data.fengmian = '';
-			state.data.photos = [];
-			state.data.brand.text = '';
-			state.data.brand.id = '';
-			state.data.series.text = '';
-			state.data.series.id = '';
-			state.data.spec.text = '';
-			state.data.spec.id = '';
-			state.data.color.text = '';
-			state.data.color.id = '';
-			state.data.transmissioncase.text = '';
-			state.data.transmissioncase.id = '';
-			state.data.market.text = '';
-			state.data.market.id = '';
-			state.data.car_color_id = [];
-			state.data.car_des = [];
-			state.data.car_style = [];
-			state.data.car_parts_id = [];
-			state.data.car_color = [];
-			state.data.car_condition_id = [];
-			state.data.pointNum = '';
-			state.data.pointData = [];
-			state.data.chekuangMs = '';
-			state.data.minPriceV = '';
-			state.data.uploadImgData = []
+		init(state,params){
+			state.data.fengmian = params.fengmian;
+			state.data.photos = params.photos;
+			state.data.brand.text = params.brandName;
+			state.data.brand.id = params.brandId;
+			state.data.series.text = params.seriesName;
+			state.data.series.id = params.seriesId;
+			state.data.spec.text = params.specName;
+			state.data.spec.id = params.specId;
+			state.data.color.text = params.colorName;
+			state.data.color.id = params.colorId;
+			state.data.transmissioncase.text = params.val;
+			state.data.transmissioncase.id = params.id;
+			state.data.market.text = params.marketName;
+			state.data.market.id = params.marketId;
+			state.data.vin = params.vin;
+			state.data.pailiang = params.pailiang;
+			state.data.licheng = params.licheng;
+			state.data.car_color_id = params.car_color_id;
+			state.data.car_des = params.car_des;
+			state.data.car_style = params.car_style;
+			state.data.car_parts_id = params.car_parts_id;
+			state.data.car_color = params.car_color;
+			state.data.car_condition_id = params.car_condition_id;
+			state.data.pointNum = params.pointNum;
+			state.data.pointData = params.pointData;
+			state.data.chekuangMs = params.chekuangMs;
+			state.data.minPriceV = params.minPriceV;
+			state.data.pifa = params.pifa;
+			state.data.pifajia = params.pifajia;
+			state.data.yt = params.yt;
+			state.data.dateText = params.dateText;
+			state.data.p_unit = params.p_unit;
 		},
 		uploadImg(state,params){
 			state.data.fengmian = params.fengmian;
@@ -470,6 +478,9 @@ const publishCondition = {
 		},
 		changepunit(state,params){
 			state.data.p_unit = params.p_unit;
+		},
+		changePF(state,params){
+			state.data.pifajia = params.pifajia;
 		}
 	},
 	actions: {},

@@ -21,8 +21,8 @@ Vue.prototype.$myToast = myToast
 Vue.prototype.$toast = Toast
 Vue.prototype.$singleImgZoom = singleImgZoom
 Vue.prototype.$swiperImgZoom = swiperImgZoom
-// Vue.prototype.$http = 'http://cheduodian.mcbn.cn'
-Vue.prototype.$http = 'http://nw.cheduodian.com'
+Vue.prototype.$http = 'http://cheduodian.mcbn.cn'
+// Vue.prototype.$http = 'http://nw.cheduodian.com'
 
 Vue.component(loadmore.name, loadmore)
 Vue.component(spinner.name, spinner)
