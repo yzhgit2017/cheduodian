@@ -76,7 +76,7 @@
 			<p class="weibotime">联系地址<span class="zuijintime">{{data.address}}</span></p>
 		</div>
 		<div class="hehight"></div>
-		<div class="xfabu"><span class="shouig" :class="[shoucang == '0'?'':'sc']" @click="shoucangfuc()"><span class="icon iconfont icon-star"></span>收藏</span><span class="shouig" @click="lianxi(data.user_tel)">联系卖家</span></div>
+		<div class="xfabu" v-if="afrom != 'myVehicle'"><span class="shouig" :class="[shoucang == '0'?'':'sc']" @click="shoucangfuc()"><span class="icon iconfont icon-star"></span>收藏</span><span class="shouig" @click="lianxi(data.user_tel)">联系卖家</span></div>
 	</div>
 </template>
 
@@ -92,7 +92,8 @@
 				swiper1: '',
 				shoucang: '',
 				shoucangdianji: true,
-				imgData: ''
+				imgData: '',
+				afrom: ''
 			}
 		},
 		mounted(){
@@ -109,7 +110,8 @@
 		},
 		methods:{
 			loadData: function(){
-				var data = {token: this.token, carid: this.$route.params.id};
+				this.afrom = this.$route.query.from;
+				var data = {token: this.token, carid: this.$route.query.id};
 				var _this = this;
 				this.$fetchPost('/getCarDetil',data).then(function(res){
 					console.log(res)
@@ -141,7 +143,7 @@
 				if(this.shoucangdianji){
 					this.shoucangdianji = false;
 					if(this.shoucang == 1){
-						var data = {token: this.token, carid: this.$route.params.id};
+						var data = {token: this.token, carid: this.$route.query.id};
 						this.$fetchPost('/doCollection',data).then(function(res){
 							console.log(res)
 							if(res.code == 1){
@@ -155,7 +157,7 @@
 						})
 					}
 					if(this.shoucang == 0){
-						var data = {token: this.token, carid: this.$route.params.id};
+						var data = {token: this.token, carid: this.$route.query.id};
 						this.$fetchPost('/doCollection',data).then(function(res){
 							console.log(res)
 							if(res.code == 1){

@@ -87,8 +87,14 @@
 					<p class="p2">1.每次悬赏急售，自动扣除2多币；</p>
 					<p class="p2">2.若多币不足，请去活动中心领取后重新发布或普通发布!</p>
 				</div>
-				<div class="section3"><span class="xquxiao putongfabu" id="putongfabu">普通发布</span><a href="javascript:;" @click="xuanshangfabu()">悬赏发布</a></div>
+				<div class="section3"><span class="xquxiao putongfabu" @click="putongfabu()">普通发布</span><a href="javascript:;" @click="xuanshangfabu()">悬赏发布</a></div>
 			</div>
+	  	</div>
+	  	<div class="half" v-show="halfShow"></div>
+		<div class="dialog deldialog" v-show="buzuShow">
+		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi"></i></p>
+		   	<div class="myMiddleText"><p style="font-size: 0.3rem;color: #000;">多币不足，请选择普通发布</p></div>
+		    <p class="putong putongfabu" style="font-size:0.3rem;color: #fff;" @click="putongfabu()">普通发布</p>
 	  	</div>
 	</div>
 </template>
@@ -206,6 +212,8 @@
 				market_id: '',
 				pifaPrice: '',
 				p_unit: 'L',
+				halfShow: false,
+				buzuShow: false
 			}
 		},
 		components: { header1},
@@ -513,8 +521,10 @@
 						}
 						console.log(data)
 					}
+					this.$store.commit('vehicleList/changeLoadingState',true);
 					that.$fetchPost('/updateCarSource',data).then(function(res){
 						console.log(res)
+						that.$store.commit('vehicleList/changeLoadingState',false);
 						if(res.code == 1){
 							that.$myToast({
 								message: '编辑成功',
@@ -536,19 +546,104 @@
 		    guanbi: function () {
 		    	this.fachetan = false;
 		    },
-
-		    xuanshangfabu: function () {
-		    	var _this = this;
-		    },
 		    plchange: function () {
 		    	this.$store.commit('publishCondition/changepunit',{p_unit: this.p_unit});
 		    },
+		    putongfabu: function(){
+		    	let data;
+				let _photos = '';
+				for (let i = 0; i < that.photos.length; i++) {
+					if(i == 0){
+						_photos = _photos + that.photos[i];
+					}else{
+						_photos = _photos + ',' + that.photos[i]
+					}
+				}
+				if(that.pointData.length == 0){
+					data = {
+						vin_code: that.vinV,
+						token: that.token,
+						img: that.fengmian,
+						photos: _photos,
+						brand_id: that.brand_id,
+						series_id: that.series_id,
+						model_id: that.model_id,
+						color_id: that.color_id,
+						boarding_time: that.dateText,
+						driven_distance: that.lichengV,
+						gearbox: that.bsx_id,
+						uses: that.yt,
+						content: that.chekuangMs,
+						money: that.minPriceV,
+						province_id: localStorage.getItem("myProvinceId"),
+						room_city: localStorage.getItem("myRoomCityId"),
+						market_id: that.market_id,
+						wholesale: that.pifaV,
+						wholesale_money: that.pifaPrice,
+						pailiang: that.pailiangV,
+						p_unit: that.p_unit,
+						type: 1,
+					}
+				}else{
+					data = {
+						vin_code: that.vinV,
+						token: that.token,
+						img: that.fengmian,
+						photos: _photos,
+						brand_id: that.brand_id,
+						series_id: that.series_id,
+						model_id: that.model_id,
+						color_id: that.color_id,
+						boarding_time: that.dateText,
+						driven_distance: that.lichengV,
+						gearbox: that.bsx_id,
+						uses: that.yt,
+						content: that.chekuangMs,
+						money: that.minPriceV,
+						province_id: localStorage.getItem("myProvinceId"),
+						room_city: localStorage.getItem("myRoomCityId"),
+						market_id: that.market_id,
+						wholesale: that.pifaV,
+						wholesale_money: that.pifaPrice,
+						pailiang: that.pailiangV,
+						p_unit: that.p_unit,
+						type: 1,
+						car_color_id: that.car_color_id,
+						car_des: that.car_des,
+						car_style: that.car_style,
+						car_parts_id: that.car_parts_id,
+						car_color: that.car_color,
+					}
+					console.log(data)
+				}
+				this.$store.commit('vehicleList/changeLoadingState',true);
+				that.$fetchPost('/setCarSource',data).then(function(res){
+					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
+					if(res.code == 1){
+						that.$myToast({
+							message: '发布成功',
+							type: 'success'
+						})
+					}
+					if(res.code == 0){
+						that.$myToast({
+							message: res.msg,
+							type: 'error'
+						})
+					}
+				})
+		    },
 		    xuanshangfabu: function () {
 		    	var that = this;
+		    	this.$store.commit('vehicleList/changeLoadingState',true);
 				this.$fetchPost('/SurplusMoney',{token: this.token,keys:"urgent_sale_money",money:2}).then(function(res){
 					console.log(res)
 				    if(res.code == 218){
 				    	// 多币不足
+				    	that.$store.commit('vehicleList/changeLoadingState',false);
+				    	that.halfShow = true;
+				    	that.buzuShow = true;
 				    }
 					if(res.code == 1){
 						// 多币充足
@@ -618,8 +713,10 @@
 							}
 							console.log(data)
 						}
+						this.$store.commit('vehicleList/changeLoadingState',true);
 						that.$fetchPost('/setCarSource',data).then(function(res){
 							console.log(res)
+							that.$store.commit('vehicleList/changeLoadingState',false);
 							if(res.code == 1){
 								that.$myToast({
 									message: '发布成功',
@@ -1029,5 +1126,71 @@
 	}
 	.swiper-details .swiper-slide img{
 		width: 100%;
+	}
+	.half {
+	    width: 100%;
+	    height: 100%;
+	    background-color: rgba(0,0,0,0.3);
+	    position: fixed;
+	    top: 0;
+	    left: 0;
+	    z-index: 99999;
+	}
+	.dialog {
+	    width: 5.92rem;
+	    height: 4.26rem;
+	    position: fixed;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	    top: 0;
+	    margin: auto;
+	    z-index: 99999;
+	    border-radius: 0.1rem;
+	    background: #FFFFFF;
+	    overflow: hidden;
+	}
+	.tantit1 {
+	    line-height: 0.86rem;
+	    height: 0.86rem;
+	    font-size: 0.3rem;
+	    color: #000000;
+	    padding: 0 0.41rem;
+	    background: #EEEFF0;
+	    border-top-left-radius: 0.1rem;
+	    border-top-right-radius: 0.1rem;
+	}
+	.guanbi {
+	    float: right;
+	    font-size: 0.4rem !important;
+	    color: #666666;
+	}
+	.myMiddleText {
+	    height: 2.54rem;
+	    display: -webkit-box;
+	    display: -ms-flexbox;
+	    display: -webkit-flex;
+	    display: flex;
+	    -webkit-box-align: center;
+	    -ms-flex-align: center;
+	    -webkit-align-items: center;
+	    align-items: center;
+	    -webkit-box-pack: center;
+	    -ms-flex-pack: center;
+	    -webkit-justify-content: center;
+	    justify-content: center;
+	}
+	.putong {
+	    overflow: hidden;
+	    background: #FF620C;
+	    width: 100%;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    text-align: center;
+	    position: absolute;
+	    bottom: 0;
+	    left: 0;
+	    border-bottom-right-radius: 0.1rem;
+	    border-bottom-left-radius: 0.1rem;
 	}
 </style>

@@ -3,10 +3,10 @@
 		<header1 v-bind:title="title"></header1>
 		<div class="pad"></div>
 		<div class="record_tab sc">
-			<div class="item sc" style="width: 25%;" v-bind:class="[state == 0 ? 'active' : '']">未联系</div>
-			<div class="item sc" style="width: 25%;" v-bind:class="[state == 3 ? 'active' : '']">已联系</div>
-			<div class="item sc" style="width: 25%;" v-bind:class="[state == 1 ? 'active' : '']">已售</div>
-			<div class="item sc" style="width: 25%;" v-bind:class="[state == 2 ? 'active' : '']">已下架</div>
+			<div class="item sc" style="width: 25%;" v-bind:class="[state == 0 ? 'active' : '']" @click="choice(0)">未联系</div>
+			<div class="item sc" style="width: 25%;" v-bind:class="[state == 3 ? 'active' : '']" @click="choice(3)">已联系</div>
+			<div class="item sc" style="width: 25%;" v-bind:class="[state == 1 ? 'active' : '']" @click="choice(1)">已售</div>
+			<div class="item sc" style="width: 25%;" v-bind:class="[state == 2 ? 'active' : '']" @click="choice(2)">已下架</div>
 		</div>
 		<div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
 			<mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore" :autoFill="false">
@@ -39,12 +39,12 @@
 									</div>
 									<div class="p4">
 										<div class="price"><span>{{subItem.money}}</span>万</div>
-										<div class="lianxi">联系卖家</div>
+										<div class="lianxi" @click="lianximaijia(subItem.id,subItem.usertel)">联系卖家</div>
 									</div>
 								</div>
 							</div>
 							<div class="caozuo">
-								<div class="del">取消收藏</div>
+								<div class="del" @click="cancelPop(subItem.id,subItem.usertel)">取消收藏</div>
 							</div>
 						</li>
 					</ul>
@@ -60,11 +60,19 @@
 		        </div>
 			</mt-loadmore>
 		</div>
+		<div class="half" v-show="halfShow"></div>
+	  	<div class="dialog" v-show="qxscShow">
+		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi"></i></p>
+		   	<div class="myMiddleText"><p style="font-size: 0.3rem;color: #000;">是否取消收藏？</p></div>
+		    <p class="putong"><span class="xquxiao">取消</span><a href="javascript:;" @click="cancelCollection()">确定</a></p>
+	  	</div>
+	  	<lianxi @call="pcall" @callClose="pcallClose" @weilianxi="pweilianxi" @yilianxi="pyilianxi" @seeClose="pseeClose" :halfShow="phalfShow" :bodaShow="pbodaShow" :lianxiShow="plianxiShow" :seeShow="pseeShow" :carid="carid" :phoneNum="pphoneNum"></lianxi>
 	</div>
 </template>
 
 <script>
 	import header1 from '@/components/header1'
+	import lianxi from '@/components/lianxi'
 	export default{
 		name: 'myCollection',
 		data(){
@@ -81,10 +89,18 @@
                 token: localStorage.getItem('myToken'),
                 page: 1,
                 pagenum: 15,
-                http: this.$http
+                http: this.$http,
+                halfShow: false,
+                qxscShow: false,
+                carid: '',
+                phalfShow: false,
+                pbodaShow: false,
+                plianxiShow: false,
+                pseeShow: false,
+                pphoneNum: ''
 			}
 		},
-		components:{header1},
+		components:{header1,lianxi},
 		mounted(){
 			this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.offsetTop;	
 		},
@@ -121,7 +137,7 @@
 	            this.$fetchPost('/getCollectionList',data).then(function(res){
 					console.log(res)
 					if(res.code == 1){
-						that.myCollectionData = res.data.data;
+						that.myCollectionData = res.list.data;
 						if(res.list.total < that.pagenum){
 							that.allLoaded = true;
 						}
@@ -139,12 +155,103 @@
 						if(res.list.total < that.pagenum){
 							that.allLoaded = true;
 						}else{
-							that.myCollectionData = that.myCollectionData.concat(res.data.data);
+							that.myCollectionData = that.myCollectionData.concat(res.list.data);
 						}
 					}
 					that.$refs.loadmore.onBottomLoaded()
 				})
 		    },
+		    cancelPop: function(id,pn){
+		    	this.carid = id;
+		    	this.halfShow = true;
+		    	this.qxscShow = true;
+		    },
+		    shuaxinData: function(){
+		    	this.page = 1;
+		    	const that = this;
+	            const data = {token:this.token,type:this.state,page:this.page,pagenum:this.pagenum};
+	            this.$fetchPost('/getCollectionList',data).then(function(res){
+					console.log(res)
+					if(res.code == 1){
+						that.myCollectionData = res.list.data;
+						if(res.list.total < that.pagenum){
+							that.allLoaded = true;
+						}
+					}
+					if(res.code == 0){
+						that.myCollectionData = []
+					}
+
+				})
+		    },
+		    cancelCollection: function(){
+		    	const that = this;
+		    	this.$store.commit('vehicleList/changeLoadingState',true);
+		    	this.$fetchPost('/doCollection',{token: this.token,carid: this.carid}).then(function(res){
+					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
+					if(res.code == 1){
+						that.halfShow = false;
+		    	        that.qxscShow = false;
+						that.$myToast({
+							message: '成功',
+							type: 'success'
+						})
+						that.shuaxinData();
+					}else{
+						that.$myToast({
+							message: res.msg,
+							type: 'error'
+						})
+					}
+					
+				})
+		    },
+		    choice: function(index){
+		    	this.page = 1;
+		    	this.state = index;
+		    	const that = this;
+	            const data = {token:this.token,type:this.state,page:this.page,pagenum:this.pagenum};
+	            this.$fetchPost('/getCollectionList',data).then(function(res){
+					console.log(res)
+					if(res.code == 1){
+						that.myCollectionData = res.list.data;
+						if(res.list.total < that.pagenum){
+							that.allLoaded = true;
+						}
+					}
+					if(res.code == 0){
+						that.myCollectionData = []
+					}
+
+				})
+		    },
+		    lianximaijia: function(id,pn){
+		    	this.carid = id;
+		    	this.pphoneNum = pn;
+		    	this.phalfShow = true;
+		    	this.pbodaShow = true;
+		    },
+		    pcall: function(){
+		    	this.pbodaShow = false;
+		    	this.plianxiShow = false;
+		    },
+		    pcallClose: function(){
+		    	this.phalfShow = false;
+		    	this.pbodaShow = false;
+		    },
+		    pweilianxi: function(){
+		    	this.phalfShow = false;
+				this.plianxiShow = false;
+		    },
+		    pyilianxi: function(){
+		    	this.plianxiShow = false;
+				this.pseeShow = true;
+		    },
+		    pseeClose: function(){
+		    	this.pseeShow = false;
+				this.phalfShow = false;
+		    }
 	    }
 	}
 </script>
@@ -343,6 +450,86 @@
 	    -moz-transform: rotateZ(45deg);
 	    -webkit-transform: rotateZ(45deg);
 	    -o-transform: rotateZ(45deg);
+	}
+	.half {
+	    width: 100%;
+	    height: 100%;
+	    background-color: rgba(0,0,0,0.3);
+	    position: fixed;
+	    top: 0;
+	    left: 0;
+	    z-index: 99999;
+	}
+	.dialog {
+	    width: 5.92rem;
+	    height: 4.26rem;
+	    position: fixed;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	    top: 0;
+	    margin: auto;
+	    z-index: 99999;
+	    border-radius: 0.1rem;
+	    background: #FFFFFF;
+	}
+	.tantit1 {
+	    line-height: 0.86rem;
+	    height: 0.86rem;
+	    font-size: 0.3rem;
+	    color: #000000;
+	    padding: 0 0.41rem;
+	    background: #EEEFF0;
+	    border-top-left-radius: 0.1rem;
+	    border-top-right-radius: 0.1rem;
+	}
+	.guanbi {
+	    float: right;
+	    font-size: 0.4rem !important;
+	    color: #666666;
+	}
+	.myMiddleText {
+	    height: 2.54rem;
+	    display: -webkit-box;
+	    display: -ms-flexbox;
+	    display: -webkit-flex;
+	    display: flex;
+	    -webkit-box-align: center;
+	    -ms-flex-align: center;
+	    -webkit-align-items: center;
+	    align-items: center;
+	    -webkit-box-pack: center;
+	    -ms-flex-pack: center;
+	    -webkit-justify-content: center;
+	    justify-content: center;
+	}
+	.putong {
+	    overflow: hidden;
+	    background: #FF620C;
+	    width: 100%;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    text-align: center;
+	    position: absolute;
+	    bottom: 0;
+	    left: 0;
+	    border-bottom-right-radius: 0.1rem;
+	    border-bottom-left-radius: 0.1rem;
+	}
+	.xquxiao {
+	    width: 50%;
+	    height: 100%;
+	    float: left;
+	    background: #FFFFFF;
+	    border-bottom-left-radius: 0.1rem;
+	    font-size: 0.3rem;
+	    color: #8A8F9B;
+	    border-top: 1px solid #EFEFEF;
+	    box-sizing: border-box;
+	}
+	.putong a {
+	    color: #FFFFFF;
+	    font-size: 0.3rem;
 	}
 	/*pull style*/
 	.page-loadmore-wrapper{

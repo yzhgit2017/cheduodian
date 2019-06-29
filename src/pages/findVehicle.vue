@@ -267,7 +267,7 @@
 		    },
 		    goDetails: function(id){
 		    	this.st = this.$refs.wrapper.scrollTop;
-		    	this.$router.push("/vehicleDetails/"+ id +"")
+		    	this.$router.push({path: '/vehicleDetails', query: {from: 'findVehicle',id: id}})
 		    },
 		    call: function(){
 		    	event.stopPropagation();		   

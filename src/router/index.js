@@ -23,6 +23,7 @@ import myVehicle from '@/pages/myVehicle'
 import mySeek from '@/pages/mySeek'
 import personalRecord from '@/pages/personalRecord'
 import myCollection from '@/pages/myCollection'
+import jubao from '@/pages/jubao'
 
 Vue.use(Router)
 
@@ -162,7 +163,7 @@ export default new Router({
       }
     },
     {
-      path: '/vehicleDetails/:id',
+      path: '/vehicleDetails',
       name: 'vehicleDetails',
       component: vehicleDetails,
       meta: {
@@ -215,6 +216,14 @@ export default new Router({
       component: myCollection,
       meta: {
         keepAlive: true
+      }
+    },
+    {
+      path: '/jubao',
+      name: 'jubao',
+      component: jubao,
+      meta: {
+        keepAlive: false
       }
     },
   ]

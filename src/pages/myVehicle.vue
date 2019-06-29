@@ -33,7 +33,7 @@
 								</div>
 								<div class="p4">
 									<div class="price"><span>{{item.wholesale_money}}</span>万</div>
-									<div class="lianxi">设为急售</div>
+									<div class="lianxi" v-if="item.type == 1 && state == 1" @click="jishou(item.id)">设为急售</div>
 								</div>
 							</div>
 						</div>
@@ -87,14 +87,26 @@
 		    <p class="putong"><span class="xquxiao" @click="shangjiaClose()">取消</span><a href="javascript:;" @click="shangjiaConfirm()">确定</a></p>
 	  	</div>
 	  	<div class="dialog" v-show="delShow">
-		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi"></i></p>
+		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi" @click="shanchuClose()"></i></p>
 		   	<div class="myMiddleText"><p style="font-size: 0.3rem;color: #000;">是否确定删除？</p></div>
-		    <p class="putong"><span class="xquxiao">取消</span><a href="javascript:;" onclick="shanchuConfirm()">确定</a></p>
+		    <p class="putong"><span class="xquxiao" @click="shanchuClose()">取消</span><a href="javascript:;" @click="shanchuConfirm()">确定</a></p>
 	  	</div>
 	  	<div class="dialog" v-show="duobiShow">
 		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi"></i></p>
 		   	<div class="myMiddleText"><p style="font-size: 0.3rem;color: #000;">多币不足</p></div>
 		    <p class="putong bzguanbi" style="font-size:0.3rem;color: #fff;background: #FF620C">确定</p>
+	  	</div>
+	  	<div class="myPopup" v-show="xuanshangShow">
+			<div class="container">
+				<div class="section1">是否悬赏急售<i class="icon iconfont icon-cuowu guanbi" @click="xsClose()"></i></div>
+				<div class="section2">
+					<p class="p1">悬赏急售可大幅提高本车曝光率及帮卖动力！</p>
+					<p class="p2">提示：</p>
+					<p class="p2">1.每次悬赏急售，自动扣除2多币；</p>
+					<p class="p2">2.若多币不足，请去活动中心领取后重新发布或普通发布!</p>
+				</div>
+				<div class="section3"><span class="xquxiao" @click="xsClose()">取消</span><a href="javascript:;" @click="chaduobi()">确定</a></div>
+			</div>
 	  	</div>
 	</div>
 </template>
@@ -126,6 +138,7 @@
                 shangjiaShow: false,
                 delShow: false,
                 duobiShow: false,
+                xuanshangShow: false,
                 newPrice: '',
                 downPrice: '',
                 carid: ''
@@ -230,22 +243,9 @@
 		    	this.myVehicleData = [];
 		    	this.shuaxinData(bs);
 		    },
-		    shuaxinData: function(type){
-		    	const that = this;
-		        const data = this.requestData(type);
-		        this.$fetchPost('/getPersonalCardata',data).then(function(res){
-					console.log(res)
-					if(res.code == 1){
-						that.myVehicleData = res.data.data;
-						if(res.data.total < that.pagenum){
-							that.allLoaded = true;
-						}
-					}	
-				})
-		    },
 		    goDetails: function(id){
 		    	this.st = this.$refs.wrapper.scrollTop;
-		    	this.$router.push("/vehicleDetails/"+ id +"")
+		    	this.$router.push({path: '/vehicleDetails', query: {from: 'myVehicle',id: id}})
 		    },
             xiugaiData: function(){
             	this.page = 1;
@@ -282,8 +282,8 @@
 		    	const that = this;
 		    	this.$fetchPost('/CarSourceMoney',{token: this.token,gid: this.carid,money: this.newPrice}).then(function(res){
 					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
 					if(res.code == 1){
-						that.$store.commit('vehicleList/changeLoadingState',false);
 						that.halfShow = false;
 		    	        that.newPriceShow = false;
 						that.$myToast({
@@ -314,8 +314,8 @@
 		    	const that = this;
 		    	this.$fetchPost('/CarSourceEnd',{token: this.token,gid: this.carid,money: this.downPrice}).then(function(res){
 					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
 					if(res.code == 1){
-						that.$store.commit('vehicleList/changeLoadingState',false);
 						that.halfShow = false;
 		    	        that.downPriceShow = false;
 						that.$myToast({
@@ -346,8 +346,8 @@
 		    	const that = this;
 		    	this.$fetchPost('/CarSourceDown',{token: this.token,gid: this.carid,type: 2}).then(function(res){
 					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
 					if(res.code == 1){
-						that.$store.commit('vehicleList/changeLoadingState',false);
 						that.halfShow = false;
 		    	        that.xiajiaShow = false;
 						that.$myToast({
@@ -378,8 +378,8 @@
 		    	const that = this;
 		    	this.$fetchPost('/CarSourceDown',{token: this.token,gid: this.carid,type: 1}).then(function(res){
 					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
 					if(res.code == 1){
-						that.$store.commit('vehicleList/changeLoadingState',false);
 						that.halfShow = false;
 		    	        that.shangjiaShow = false;
 						that.$myToast({
@@ -395,11 +395,84 @@
 					}
 				})
 		    },
+		    del: function(id){
+		    	event.stopPropagation();
+		    	this.halfShow = true;
+		    	this.delShow = true;
+		    	this.carid = id;
+		    },
+		    shanchuClose: function(){
+		    	this.halfShow = false;
+		    	this.delShow = false;
+		    },
+		    shanchuConfirm: function(){
+		    	this.$store.commit('vehicleList/changeLoadingState',true);
+		    	const that = this;
+		    	this.$fetchPost('/DelCarSource',{token: this.token,gid: this.carid}).then(function(res){
+					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
+					if(res.code == 1){
+						that.halfShow = false;
+		    	        that.delShow = false;
+						that.$myToast({
+							message: '成功',
+							type: 'success'
+						})
+						that.xiugaiData();
+					}else{
+						that.$myToast({
+							message: res.msg,
+							type: 'error'
+						})
+					}
+				})
+		    },
+		    jishou: function(id){
+		    	event.stopPropagation();
+		    	this.xuanshangShow = true;
+		    	this.carid = id;
+		    },
+		    xsClose: function(){
+		    	this.xuanshangShow = false;
+		    },
+		    chaduobi: function(){
+		    	this.$store.commit('vehicleList/changeLoadingState',true);
+		    	const that = this;
+		    	this.$fetchPost('/SurplusMoney',{token: this.token,keys:"urgent_sale_money",money:2}).then(function(res){
+					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
+					if(res.code == 1){
+						that.$fetchPost('/CarSourceUrgentSale',{token: that.token,gid: that.carid}).then(function(res){
+							console.log(res)
+							if(res.code == 1){
+								that.xuanshangShow = false;
+								that.$myToast({
+									message: '设置成功',
+									type: 'success'
+								});
+								that.xiugaiData();
+							}
+						})
+					}
+					if(res.code == 0){
+						that.$myToast({
+							message: res.msg,
+							type: 'error'
+						})
+					}
+					if(res.code == 218){
+						this.halfShow = true;
+		    	        this.duobiShow = true;
+					}
+				})
+		    },
 		    bianji: function(id){
 		    	event.stopPropagation();
+		    	this.$store.commit('vehicleList/changeLoadingState',true);
 		    	const that = this;
 		    	this.$fetchGet('/editCarSource',{params: {token: this.token,gid: id}}).then(function(res){
 					console.log(res)
+					that.$store.commit('vehicleList/changeLoadingState',false);
 					if(res.code == 1){
 						const car_color_id = [];
 						const car_des = [];
@@ -599,6 +672,9 @@
 	.card_list_item_content .des .p3 label.bg1 {
 	    background: #FF620C;
 	}
+	.card_list_item_content .des .p3 label.bg2 {
+	    background: #FF2F2F;
+	}
 	.card_list_item_content .des .p3 .state {
 	    color: #8A8F9B;
 	    font-size: 0.22rem;
@@ -736,6 +812,83 @@
 	    background: #FF620C;
 		color: #FFFFFF;
         font-size: 0.3rem;
+	}
+	.myPopup {
+	    position: fixed;
+	    height: 100%;
+	    width: 100%;
+	    top: 0;
+	    left: 0;
+	    background-color: rgba(0,0,0,0.3);
+	    z-index: 99999;
+	}
+	.myPopup .container {
+	    position: absolute;
+	    width: 5.92rem;
+	    height: auto;
+	    left: 50%;
+	    margin-left: -2.96rem;
+	    top: 50%;
+	    transform: translateY(-50%);
+	    -ms-transform: translateY(-50%);
+	    -moz-transform: translateY(-50%);
+	    -webkit-transform: translateY(-50%);
+	    -o-transform: translateY(-50%);
+	    background: #fff;
+	    border-radius: 0.1rem;
+	    overflow: hidden;
+	}
+	.myPopup .container .section1 {
+	    line-height: 0.86rem;
+	    height: 0.86rem;
+	    font-size: 0.3rem;
+	    color: #000000;
+	    padding: 0 0.41rem;
+	    background: #EEEFF0;
+	}
+	.myPopup .container .section2 {
+	    padding: 0.43rem 0.53rem;
+	    box-sizing: border-box;
+	    background: #fff;
+	}
+	.myPopup .container .section2 .p1 {
+	    font-size: 0.3rem;
+	    color: #FF620C;
+	    line-height: 0.48rem;
+	}
+	.myPopup .container .section2 .p2 {
+	    font-size: 0.3rem;
+	    color: #000;
+	    line-height: 0.48rem;
+	}
+	.myPopup .container .section3 {
+	    width: 100%;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    text-align: center;
+	    overflow: hidden;
+	}
+	.myPopup .container .section3 .xquxiao{
+		width: 50%;
+	    height: 100%;
+	    float: left;
+	    background: #FFFFFF;
+	    font-size: 0.3rem;
+	    color: #8A8F9B;
+	    border-top: 1px solid #EFEFEF;
+	    box-sizing: border-box;
+	}
+	.myPopup .container .section3 a {
+	    color: #FFFFFF;
+	    font-size: 0.3rem;
+	    background: #FF620C;
+	    width: 50%;
+	    height: 100%;
+	    text-align: center;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    float: left;
+	    border-top: 1px solid #FF620C;
 	}
 	/*pull style*/
 	.page-loadmore-wrapper{
