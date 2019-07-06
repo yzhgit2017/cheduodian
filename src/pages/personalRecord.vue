@@ -3,8 +3,8 @@
 		<header1 v-bind:title="title"></header1>
 		<div class="pad"></div>
 		<div class="record_tab">
-			<div class="item sc" v-bind:class="[state == 1 ? 'active' : '']" style="width: 50%;">待看车</div>
-			<div class="item sc" v-bind:class="[state == 2 ? 'active' : '']" style="width: 50%;">已看车</div>
+			<div class="item sc" v-bind:class="[state == 1 ? 'active' : '']" style="width: 50%;" @click="choice(1)">待看车</div>
+			<div class="item sc" v-bind:class="[state == 2 ? 'active' : '']" style="width: 50%;" @click="choice(2)">已看车</div>
 		</div>
 		<div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
 			<mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" :top-method="loadTop" @translate-change="translateChange" @top-status-change="handleTopChange" ref="loadmore" :autoFill="false">
@@ -17,7 +17,7 @@
 				<ul class="global_ul_list" v-for="(item,index) in personalRecordData" v-bind:key="item.id">
 					<div class="date">{{item.date}}</div>
 					<ul class="record_list">
-						<li style="margin-top:0;margin-bottom:0.2rem;" class="dateId_17" v-for="(subItem,index) in item.datalist" v-bind:key="subItem.id">
+						<li style="margin-top:0;margin-bottom:0.2rem;" class="dateId_17" v-for="(subItem,index) in item.datalist" v-bind:key="subItem.id" @click="goDetails(subItem.id)">
 							<div class="card_list_item_content">
 								<div class="iw">
 									<img :src="http + subItem.img">
@@ -37,13 +37,13 @@
 									</div>
 									<div class="p4">
 										<div class="price"><span>{{subItem.money}}</span>万</div>
-										<div class="lianxi">联系卖家</div>
+										<div class="lianxi" @click="lianximaijia(subItem.id,subItem.usertel)">联系卖家</div>
 									</div>
 								</div>
 							</div>
 							<div class="caozuo">
-								<div class="del">设置已看</div>
-								<div class="del">删除</div>
+								<div class="del" v-if="state == 1" @click="setWatch(subItem.id)">设置已看</div>
+								<div class="del" @click="delItem(subItem.id)">删除</div>
 							</div>
 							<div class="salesStatus" v-if="subItem.status == 1">在售</div>
 							<div class="salesStatus gray" v-if="subItem.status == 4">已售</div>
@@ -62,11 +62,24 @@
 		        </div>
 			</mt-loadmore>
 		</div>
+		<div class="half" v-show="halfShow"></div>
+	  	<div class="dialog deldialog" v-show="delShow">
+		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi" @click="closeDel()"></i></p>
+		   	<div class="myMiddleText"><p style="font-size: 0.3rem;color: #000;">是否删除？</p></div>
+		    <p class="putong"><span class="xquxiao" @click="closeDel()">取消</span><a href="javascript:;" @click="deletef()">确定</a></p>
+	  	</div>
+	  	<div class="dialog setdialog" v-show="setShow">
+		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi" @click="closeSet()"></i></p>
+		   	<div class="myMiddleText"><p style="font-size: 0.3rem;color: #000;">是否设置为已看车？</p></div>
+		    <p class="putong"><span class="xquxiao" @click="closeSet()">取消</span><a href="javascript:;" @click="setWatchf()">确定</a></p>
+	  	</div>
+	  	<lianxi @call="pcall" @callClose="pcallClose" @weilianxi="pweilianxi" @yilianxi="pyilianxi" @seeClose="pseeClose" :halfShow="phalfShow" :bodaShow="pbodaShow" :lianxiShow="plianxiShow" :seeShow="pseeShow" :carid="carid" :phoneNum="pphoneNum"></lianxi>
 	</div>
 </template>
 
 <script>
     import header1 from '@/components/header1'
+    import lianxi from '@/components/lianxi'
 	export default{
 		name: 'personalRecord',
 		data(){
@@ -83,12 +96,29 @@
                 token: localStorage.getItem('myToken'),
                 page: 1,
                 pagenum: 15,
-                http: this.$http
+                http: this.$http,
+                st: 0,
+                halfShow: false,
+                delShow: false,
+                setShow: false,
+                carid: '',
+                qxscShow: false,
+                phalfShow: false,
+                pbodaShow: false,
+                plianxiShow: false,
+                pseeShow: false,
+                pphoneNum: ''
 			}
 		},
-		components:{header1},
+		components:{header1,lianxi},
 		mounted(){
 			this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.offsetTop;	
+		},
+		activated(){
+            this.$refs.wrapper.scrollTop = this.st;
+		},
+		deactivated(){
+
 		},
 		created() {
 			const that = this;
@@ -123,7 +153,7 @@
 	            this.$fetchPost('/getPhonelist',data).then(function(res){
 					console.log(res)
 					if(res.code == 1){
-						that.personalRecordData = res.data.data;
+						that.personalRecordData = res.list.data;
 						if(res.list.total < that.pagenum){
 							that.allLoaded = true;
 						}
@@ -141,12 +171,136 @@
 						if(res.list.total < that.pagenum){
 							that.allLoaded = true;
 						}else{
-							that.personalRecordData = that.personalRecordData.concat(res.data.data);
+							that.personalRecordData = that.personalRecordData.concat(res.list.data);
 						}
 					}
 					that.$refs.loadmore.onBottomLoaded()
 				})
 		    },
+		    choice: function(num) {
+		    	this.state = num;
+		    	this.page = 1;
+		    	const that = this;
+	            const data = {token:this.token,type:this.state,page:this.page,pagenum:this.pagenum};
+	            this.$fetchPost('/getPhonelist',data).then(function(res){
+					console.log(res)
+					if(res.code == 1){
+						that.personalRecordData = res.list.data;
+						if(res.list.total < that.pagenum){
+							that.allLoaded = true;
+						}
+					}
+					that.$refs.loadmore.onTopLoaded();
+				})
+		    },
+		    goDetails: function(id){
+		    	this.st = this.$refs.wrapper.scrollTop;
+		    	this.$router.push({path: '/vehicleDetails', query: {from: 'personalRecord',id: id}})
+		    },
+		    shuaxin: function(){
+		    	this.page = 1;
+		    	const that = this;
+	            const data = {token:this.token,type:this.state,page:this.page,pagenum:this.pagenum};
+	            this.$fetchPost('/getPhonelist',data).then(function(res){
+					console.log(res)
+					if(res.code == 1){
+						that.personalRecordData = res.list.data;
+						if(res.list.total < that.pagenum){
+							that.allLoaded = true;
+						}
+					}
+					that.$refs.loadmore.onTopLoaded();
+				})
+		    },
+		    setWatch: function(id){
+		    	event.stopPropagation();
+		    	this.halfShow = true;
+		    	this.setShow = true;
+		    	this.carid = id;
+		    },
+		    closeSet: function(){
+		    	this.halfShow = false;
+		    	this.setShow = false;
+		    },
+		    setWatchf: function(){
+		    	this.$store.commit('vehicleList/changeLoadingState',true);
+		    	const that = this;
+		    	this.$fetchPost('/recordIntercollection',{token: this.token,carid: this.carid}).then(function(res){
+		    		that.$store.commit('vehicleList/changeLoadingState',false);
+					if(res.code == 1){
+						that.$myToast({
+							message: '操作成功',
+							type: 'success'
+						});
+						that.shuaxin();
+						that.halfShow = false;
+						that.setShow = false;
+					}else{
+						that.$myToast({
+							message: res.msg,
+							type: 'error'
+						})
+					}
+				})
+		    },
+		    delItem: function(id){
+		    	event.stopPropagation();
+		    	this.halfShow = true;
+		    	this.delShow = true;
+		    	this.carid = id;
+		    },
+		    closeDel: function(){
+		    	this.halfShow = false;
+		    	this.delShow = true;
+		    },
+		    deletef: function(){
+		    	this.$store.commit('vehicleList/changeLoadingState',true);
+		    	const that = this;
+		    	this.$fetchPost('/delPhoneLog',{token: this.token,carid: this.carid}).then(function(res){
+		    		that.$store.commit('vehicleList/changeLoadingState',false);
+					if(res.code == 1){
+						that.$myToast({
+							message: '操作成功',
+							type: 'success'
+						});
+						that.shuaxin();
+						that.halfShow = false;
+						that.delShow = false;
+					}else{
+						that.$myToast({
+							message: res.msg,
+							type: 'error'
+						})
+					}
+				})
+		    },
+		    lianximaijia: function(id,pn){
+		    	event.stopPropagation();
+		    	this.carid = id;
+		    	this.pphoneNum = pn;
+		    	this.phalfShow = true;
+		    	this.pbodaShow = true;
+		    },
+		    pcall: function(){
+		    	this.pbodaShow = false;
+		    	this.plianxiShow = false;
+		    },
+		    pcallClose: function(){
+		    	this.phalfShow = false;
+		    	this.pbodaShow = false;
+		    },
+		    pweilianxi: function(){
+		    	this.phalfShow = false;
+				this.plianxiShow = false;
+		    },
+		    pyilianxi: function(){
+		    	this.plianxiShow = false;
+				this.pseeShow = true;
+		    },
+		    pseeClose: function(){
+		    	this.pseeShow = false;
+				this.phalfShow = false;
+		    }
 	    }
 	}
 </script>
@@ -334,6 +488,108 @@
 	    -moz-transform: rotateZ(45deg);
 	    -webkit-transform: rotateZ(45deg);
 	    -o-transform: rotateZ(45deg);
+	}
+	.half {
+	    width: 100%;
+	    height: 100%;
+	    background-color: rgba(0,0,0,0.3);
+	    position: fixed;
+	    top: 0;
+	    left: 0;
+	    z-index: 99999;
+	}
+	.dialog {
+	    width: 5.92rem;
+	    height: 4.26rem;
+	    position: fixed;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	    top: 0;
+	    margin: auto;
+	    z-index: 99999;
+	    border-radius: 0.1rem;
+	    background: #FFFFFF;
+	    overflow: hidden;
+	}
+	.tantit1 {
+	    line-height: 0.86rem;
+	    height: 0.86rem;
+	    font-size: 0.3rem;
+	    color: #000000;
+	    padding: 0 0.41rem;
+	    background: #EEEFF0;
+	    border-top-left-radius: 0.1rem;
+	    border-top-right-radius: 0.1rem;
+	}
+	.guanbi {
+	    float: right;
+	    font-size: 0.4rem !important;
+	    color: #666666;
+	}
+	.myMiddleText {
+	    height: 2.54rem;
+	    display: -webkit-box;
+	    display: -ms-flexbox;
+	    display: -webkit-flex;
+	    display: flex;
+	    -webkit-box-align: center;
+	    -ms-flex-align: center;
+	    -webkit-align-items: center;
+	    align-items: center;
+	    -webkit-box-pack: center;
+	    -ms-flex-pack: center;
+	    -webkit-justify-content: center;
+	    justify-content: center;
+	}
+	.myMiddleText .editPrice {
+	    width: 4rem;
+	    height: 0.8rem;
+	    border-radius: 0.4rem;
+	    box-sizing: border-box;
+	    background: none;
+	    border: 1px solid rgba(138,143,155,1);
+	    text-align: center;
+	    display: -webkit-box;
+	    display: -ms-flexbox;
+	    display: -webkit-flex;
+	    display: flex;
+	    -webkit-box-align: center;
+	    -ms-flex-align: center;
+	    -webkit-align-items: center;
+	    align-items: center;
+	    -webkit-box-pack: center;
+	    -ms-flex-pack: center;
+	    -webkit-justify-content: center;
+	    justify-content: center;
+	}
+	.putong{
+		overflow: hidden;
+	    width: 100%;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    text-align: center;
+	    position: absolute;
+	    bottom: 0;
+	    left: 0;
+	}
+	.putong .xquxiao{
+		width: 50%;
+	    height: 100%;
+	    float: left;
+	    background: #FFFFFF;
+	    font-size: 0.3rem;
+	    color: #8A8F9B;
+	    border-top: 1px solid #EFEFEF;
+	    box-sizing: border-box;
+	}
+	.putong a{
+		width: 50%;
+	    height: 100%;
+	    float: left;
+	    background: #FF620C;
+		color: #FFFFFF;
+        font-size: 0.3rem;
 	}
 	/*pull style*/
 	.page-loadmore-wrapper{

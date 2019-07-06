@@ -19,7 +19,7 @@
 				<ul class="global_ul_list" v-for="(item,index) in myCollectionData" v-bind:key="item.id">
 					<div class="date">{{item.date}}</div>
 					<ul class="record_list">
-						<li style="margin-top:0;margin-bottom:0.2rem;" class="dateId_17" v-for="(subItem,index) in item.datalist" v-bind:key="subItem.id">
+						<li style="margin-top:0;margin-bottom:0.2rem;" class="dateId_17" v-for="(subItem,index) in item.datalist" v-bind:key="subItem.id" @click="goDetails(subItem.id)">
 							<div class="card_list_item_content">
 								<div class="iw">
 									<img :src="http + subItem.img">
@@ -86,13 +86,14 @@
 		        allLoaded: false,
                 bottomStatus: '',
                 state: 0,
+                st: 0,
                 token: localStorage.getItem('myToken'),
                 page: 1,
                 pagenum: 15,
                 http: this.$http,
                 halfShow: false,
-                qxscShow: false,
                 carid: '',
+                qxscShow: false,
                 phalfShow: false,
                 pbodaShow: false,
                 plianxiShow: false,
@@ -103,6 +104,12 @@
 		components:{header1,lianxi},
 		mounted(){
 			this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.offsetTop;	
+		},
+		activated(){
+            this.$refs.wrapper.scrollTop = this.st;
+		},
+		deactivated(){
+
 		},
 		created() {
 			const that = this;
@@ -226,7 +233,12 @@
 
 				})
 		    },
+		    goDetails: function(id){
+		    	this.st = this.$refs.wrapper.scrollTop;
+		    	this.$router.push({path: '/vehicleDetails', query: {from: 'myCollection',id: id}})
+		    },
 		    lianximaijia: function(id,pn){
+		    	event.stopPropagation();
 		    	this.carid = id;
 		    	this.pphoneNum = pn;
 		    	this.phalfShow = true;

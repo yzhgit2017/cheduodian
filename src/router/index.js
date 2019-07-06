@@ -24,6 +24,9 @@ import mySeek from '@/pages/mySeek'
 import personalRecord from '@/pages/personalRecord'
 import myCollection from '@/pages/myCollection'
 import jubao from '@/pages/jubao'
+import seekVehicle from '@/pages/seekVehicle'
+import seekDetails from '@/pages/seekDetails'
+import publishSeek from '@/pages/publishSeek'
 
 Vue.use(Router)
 
@@ -222,6 +225,30 @@ export default new Router({
       path: '/jubao',
       name: 'jubao',
       component: jubao,
+      meta: {
+        keepAlive: true
+      }
+    },
+    {
+      path: '/seekVehicle',
+      name: 'seekVehicle',
+      component: seekVehicle,
+      meta: {
+        keepAlive: true
+      }
+    },
+    {
+      path: '/seekDetails',
+      name: 'seekDetails',
+      component: seekDetails,
+      meta: {
+        keepAlive: true
+      }
+    },
+    {
+      path: '/publishSeek',
+      name: 'publishSeek',
+      component: publishSeek,
       meta: {
         keepAlive: false
       }

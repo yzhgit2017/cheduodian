@@ -76,12 +76,16 @@
 			<p class="weibotime">联系地址<span class="zuijintime">{{data.address}}</span></p>
 		</div>
 		<div class="hehight"></div>
-		<div class="xfabu" v-if="afrom != 'myVehicle'"><span class="shouig" :class="[shoucang == '0'?'':'sc']" @click="shoucangfuc()"><span class="icon iconfont icon-star"></span>收藏</span><span class="shouig" @click="lianxi(data.user_tel)">联系卖家</span></div>
+		<div class="xfabu" v-if="afrom == 'myCollection'"><span class="shouig" style="width: 100%;background: none;color: #ffffff;" @click="lianxi(data.user_tel)">联系卖家</span></div>
+		<div v-else-if="afrom == 'myVehicle'"></div>
+		<div class="xfabu" v-else><span class="shouig" :class="[shoucang == '0'?'':'sc']" @click="shoucangfuc()"><span class="icon iconfont icon-star"></span>收藏</span><span class="shouig" @click="lianxi(data.user_tel)">联系卖家</span></div>
+		<lianxi @call="pcall" @callClose="pcallClose" @weilianxi="pweilianxi" @yilianxi="pyilianxi" @seeClose="pseeClose" :halfShow="phalfShow" :bodaShow="pbodaShow" :lianxiShow="plianxiShow" :seeShow="pseeShow" :carid="carid" :phoneNum="pphoneNum"></lianxi>
 	</div>
 </template>
 
 <script>
 	import Swiper from 'static/js/swiper.js'
+	import lianxi from '@/components/lianxi'
 	export default{
 		name: 'vehicleDetails',
 		data(){
@@ -93,7 +97,14 @@
 				shoucang: '',
 				shoucangdianji: true,
 				imgData: '',
-				afrom: ''
+				afrom: '',
+				carid: '',
+                qxscShow: false,
+                phalfShow: false,
+                pbodaShow: false,
+                plianxiShow: false,
+                pseeShow: false,
+                pphoneNum: ''
 			}
 		},
 		mounted(){
@@ -108,9 +119,11 @@
 			this.shoucangdianji = true;
 			this.imgData = '';
 		},
+		components:{lianxi},
 		methods:{
 			loadData: function(){
 				this.afrom = this.$route.query.from;
+				this.carid = this.$route.query.id;
 				var data = {token: this.token, carid: this.$route.query.id};
 				var _this = this;
 				this.$fetchPost('/getCarDetil',data).then(function(res){
@@ -174,8 +187,30 @@
 				
 			},
 			lianxi: function(tel){
-				window.location.href = "tel:" + tel;
-			}
+				this.pphoneNum = tel;
+		    	this.phalfShow = true;
+		    	this.pbodaShow = true;
+			},
+			pcall: function(){
+		    	this.pbodaShow = false;
+		    	this.plianxiShow = false;
+		    },
+		    pcallClose: function(){
+		    	this.phalfShow = false;
+		    	this.pbodaShow = false;
+		    },
+		    pweilianxi: function(){
+		    	this.phalfShow = false;
+				this.plianxiShow = false;
+		    },
+		    pyilianxi: function(){
+		    	this.plianxiShow = false;
+				this.pseeShow = true;
+		    },
+		    pseeClose: function(){
+		    	this.pseeShow = false;
+				this.phalfShow = false;
+		    }
 		},
 		beforeUpdate: function(){
 			if(this.swiper1 != ''){

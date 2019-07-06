@@ -5,19 +5,19 @@
 		<div class="qiutit">车辆状况</div>
 		<div class="jubaocar">
 			<div class="chejubao zhenshixing">
-				<label>真实性:</label><p class="qingkuang aa"><span biaoshi="1">已售</span><span biaoshi="2">虚假</span><span biaoshi="3">无问题</span></p>
+				<label>真实性:</label><p class="qingkuang aa"><span v-bind:class="[xujia == 1 ? 'checked' : '']" @click="choiceXJ(1)">已售</span><span v-bind:class="[xujia == 2 ? 'checked' : '']" @click="choiceXJ(2)">虚假</span><span v-bind:class="[xujia == 3 ? 'checked' : '']" @click="choiceXJ(3)">无问题</span></p>
 			</div>
 			<div class="chejubao chekuang">
-				<label>车况描述:</label><p class="qingkuang aa"><span biaoshi="1">不准确</span><span biaoshi="2">正常</span><span biaoshi="3">虚假</span></p>
+				<label>车况描述:</label><p class="qingkuang aa"><span v-bind:class="[chekuang == 1 ? 'checked' : '']" @click="choiceCK(1)">不准确</span><span v-bind:class="[chekuang == 2 ? 'checked' : '']" @click="choiceCK(2)">正常</span><span v-bind:class="[chekuang == 3 ? 'checked' : '']" @click="choiceCK(3)">虚假</span></p>
 			</div>
 			<div class="chejubao jiage">
-				<label>价格:</label><p class="qingkuang aa"><span biaoshi="1">偏高</span><span biaoshi="2">正常</span><span biaoshi="3">偏低</span></p>
+				<label>价格:</label><p class="qingkuang aa"><span v-bind:class="[jiage == 1 ? 'checked' : '']" @click="choiceJG(1)">偏高</span><span v-bind:class="[jiage == 2 ? 'checked' : '']" @click="choiceJG(2)">正常</span><span v-bind:class="[jiage == 3 ? 'checked' : '']" @click="choiceJG(3)">偏低</span></p>
 			</div>
 			<div class="chejubao">
-				<label>其他:</label><p class="qingkuang"><textarea placeholder="请描述举报原因" class="qitayuanyin"></textarea></p>
+				<label>其他:</label><p class="qingkuang"><textarea placeholder="请描述举报原因" class="qitayuanyin" v-model="desc"></textarea></p>
 			</div>
 		</div>
-		<div class="xfabu"><span class="shouig">取消</span><span class="shouig">提交</span></div>
+		<div class="xfabu"><span class="shouig" @click="quxiao()">取消</span><span class="shouig" @click="tijiao()">提交</span></div>
 	</div>
 </template>
 
@@ -28,9 +28,76 @@
 		data(){
 			return {
 				title: '车源举报',
+				xujia: '',
+				chekuang: '',
+				jiage: '',
+				desc: '',
+				token: localStorage.getItem('myToken'),
 			}
 		},
 		components:{header1},
+		activated(){		
+		},
+		deactivated(){
+			this.xujia = '';
+			this.chekuang = '';
+			this.jiage = '';
+			this.desc = '';
+		},
+		methods: {
+			choiceXJ: function(bs){
+				this.xujia = bs;
+			},
+			choiceCK: function(bs){
+				this.chekuang = bs;
+			},
+			choiceJG: function(bs){
+				this.jiage = bs;
+			},
+			quxiao: function(){
+				this.$router.back();
+			},
+			tijiao: function(){
+				if(this.xujia == ''){
+					this.$toast({
+						message: '请选择真实性'
+					})
+					return false
+				}else if(this.chekuang == ''){
+					this.$toast({
+						message: '请选择车况描述'
+					})
+					return false
+				}else if(this.jiage == ''){
+					this.$toast({
+						message: '请选择价格'
+					})
+					return false
+				}else{
+					const that = this;
+			        const data = {token: this.token,authenticity: this.xujia,info: this.chekuang,price: this.jiage,other: this.desc,cs_id: this.$route.query.id};
+			        console.log(data)
+			        this.$fetchPost('/setReport',data).then(function(res){
+						console.log(res)
+						if(res.code == 1){
+							that.$myToast({
+								message: '举报成功',
+								type: 'success'
+							})
+							setTimeout(function(){
+								that.$router.back();
+							},1000)
+						}
+					})
+				}
+			}
+		},
+		// beforeRouteEnter (to, from, next) {
+		//   	console.log(from)
+		// },
+		// beforeRouteLeave (to, from , next) {
+		//  	console.log(to)
+		// }
 	}
 </script>
 

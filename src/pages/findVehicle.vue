@@ -51,7 +51,7 @@
 									</div>
 									<div class="p4">
 										<div class="price"><span>{{item.wholesale_money}}</span>万</div>
-										<div class="lianxi" @click="call()">联系卖家</div>
+										<div class="lianxi" @click="call(item.id,item.usertel)">联系卖家</div>
 									</div>
 								</div>
 							</div>							
@@ -70,11 +70,13 @@
 				</mt-loadmore>
 			</div>		
 		</div>
+		<lianxi @call="pcall" @callClose="pcallClose" @weilianxi="pweilianxi" @yilianxi="pyilianxi" @seeClose="pseeClose" :halfShow="phalfShow" :bodaShow="pbodaShow" :lianxiShow="plianxiShow" :seeShow="pseeShow" :carid="carid" :phoneNum="pphoneNum"></lianxi>
 	</div>
 </template>
 
 <script>
     import header2 from '@/components/header2'
+    import lianxi from '@/components/lianxi'
 	export default{
 		name: 'findVehicle',
 		data(){
@@ -104,6 +106,13 @@
 		        cheling: '<span class="span1">车龄</span><span class="span2"></span>',
 		        jiage: '<span class="span1">价格</span><span class="span2"></span>',
 		        paixu1: '<span class="span1">排序</span><span class="span2"></span>',
+		        carid: '',
+                qxscShow: false,
+                phalfShow: false,
+                pbodaShow: false,
+                plianxiShow: false,
+                pseeShow: false,
+                pphoneNum: ''
 			}
 		},
 		created(){
@@ -170,7 +179,8 @@
 
 		},
 		beforeRouteLeave (to, from, next){
-		    if(to.name == "vehicleDetails"){
+			console.log(to)
+		    if(to.name == "vehicleDetails" || to.name == "jubao"){
 		    	from.meta.keepAlive = true;
 		    }else{
 		    	from.meta.keepAlive = false;
@@ -182,7 +192,7 @@
 		   	    return this.$store.state.vehicleList
 		    }
 		},
-		components:{header2},
+		components:{header2,lianxi},
 		methods:{
 			showOrderList: function(){
 				this.show = !this.show;
@@ -269,9 +279,6 @@
 		    	this.st = this.$refs.wrapper.scrollTop;
 		    	this.$router.push({path: '/vehicleDetails', query: {from: 'findVehicle',id: id}})
 		    },
-		    call: function(){
-		    	event.stopPropagation();		   
-		    },
 		    requestData: function(sort){
 		    	var data = {
 					token: this.token,
@@ -298,6 +305,34 @@
 					pagenum: this.pagenum
 				}
 				return data
+		    },
+		    call: function(id,tel){
+		    	this.st = this.$refs.wrapper.scrollTop;
+		    	event.stopPropagation();
+		    	this.carid = id;
+		    	this.pphoneNum = tel;
+		    	this.phalfShow = true;
+		    	this.pbodaShow = true;	   
+		    },
+		    pcall: function(){
+		    	this.pbodaShow = false;
+		    	this.plianxiShow = false;
+		    },
+		    pcallClose: function(){
+		    	this.phalfShow = false;
+		    	this.pbodaShow = false;
+		    },
+		    pweilianxi: function(){
+		    	this.phalfShow = false;
+				this.plianxiShow = false;
+		    },
+		    pyilianxi: function(){
+		    	this.plianxiShow = false;
+				this.pseeShow = true;
+		    },
+		    pseeClose: function(){
+		    	this.pseeShow = false;
+				this.phalfShow = false;
 		    }
 		}
 	}
