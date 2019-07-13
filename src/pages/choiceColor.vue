@@ -49,6 +49,8 @@
 					this.$store.commit('filterCondition/changeColor',{colorId: this.activeItem, colorName: this.activeItemName});				
 				}else if(this.$route.query.from == 'publishVehicle'){
 					this.$store.commit('publishCondition/changeColor',{colorId: this.activeItem, colorName: this.activeItemName});
+				}else if(this.$route.query.from == 'publishSeek'){
+					this.$store.commit('publishSeekCondition/changeColor',{colorId: this.activeItem, colorName: this.activeItemName});
 				}else{
 					this.$store.commit('vehicleList/changeColor',{colorId: this.activeItem, colorName: this.activeItemName});
 				}

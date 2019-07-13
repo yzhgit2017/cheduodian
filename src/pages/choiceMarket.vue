@@ -98,6 +98,8 @@
 					this.$store.commit('filterCondition/changeMarket',{marketId: id, marketName: name});
 				}else if(this.$route.query.from == 'publishVehicle'){
 					this.$store.commit('publishCondition/changeMarket',{marketId: id, marketName: name});
+				}else if(this.$route.query.from == 'personalMsg'){
+					this.$store.commit('registerMsg/changeMarket',{marketId: id, marketName: name});
 				}else{
 					this.$store.commit('vehicleList/changeMarket',{marketId: id, marketName: name});
 				}

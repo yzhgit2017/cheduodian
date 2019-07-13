@@ -170,6 +170,7 @@
 			}
 		},
 		mounted(){
+			console.log(document.documentElement.clientHeight,this.$refs.wrapper.offsetTop)
 			this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.offsetTop;	
 		},
 		activated(){

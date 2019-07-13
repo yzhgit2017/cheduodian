@@ -487,10 +487,135 @@ const publishCondition = {
 	getters: {}
 }
 
+const publishSeekCondition = {
+	namespaced: true,
+	state: {
+		data: {
+			brand: {
+				text: '',
+				id: ''
+			},
+			series: {
+				text: '',
+				id: ''
+			},
+			spec: {
+				text: '',
+				id: ''
+			},
+			color: {
+				text: '',
+				id: ''
+			},
+			minage: '',
+			maxage: '',
+			age: '',
+			cusName: '',
+			cusTel: '',
+			beizhu: '',
+			xsstate: 2
+		}
+	},
+	mutations: {
+		changeBrand(state,params){
+			state.data.brand.text = params.brandName;
+			state.data.brand.id = params.brandId;
+			state.data.series.text = params.seriesName;
+			state.data.series.id = params.seriesId;
+			state.data.spec.text = params.specName;
+			state.data.spec.id = params.specId;
+		},
+		changeCoty(state,params){
+			state.data.minage = params.min;
+			state.data.maxage = params.max;
+			state.data.age = params.val;
+		},
+		changeColor(state,params){
+			state.data.color.text = params.colorName;
+			state.data.color.id = params.colorId;
+		},
+		changeName(state,params){
+			state.data.cusName = params.cusName;
+		},
+		changeTel(state,params){
+			state.data.cusTel = params.cusTel;
+		},
+		changeBeizhu(state,params){
+			state.data.beizhu = params.beizhu;
+		},
+		changexsstate(state,params){
+			state.data.xsstate = params.xsstate;
+		},
+	},
+	actions: {},
+	getters: {}
+}
+
+const registerMsg = {
+	namespaced: true,
+	state: {
+		data: {
+			mturl: '',
+			qturl: '',
+			storeName: '',
+			fuzeren: '',
+			tel: '',
+			province: '',
+			city: {
+				text: '城市',
+				id: ''
+			},
+			market: {
+				text: '二手车市场',
+				id: ''
+			},
+			address: ''
+		}
+	},
+	mutations: {
+		changemturl(state,params){
+			state.data.mturl = params.mturl;
+		},
+		changeqturl(state,params){
+			state.data.qturl = params.qturl;
+		},
+		changeStoreName(state,params){
+			state.data.storeName = params.storeName;
+		},
+		changeFuzeren(state,params){
+			state.data.fuzeren = params.fuzeren;
+		},
+		changeTel(state,params){
+			state.data.tel = params.tel;
+		},
+		changeCity(state,params){
+			state.data.province = params.provinceId;
+			state.data.city.text = params.cityName;
+			state.data.city.id = params.cityId;
+		},
+		changeMarket(state,params){
+			state.data.market.text = params.marketName;
+			state.data.market.id = params.marketId;
+		},
+		changeAddress(state,params){
+			state.data.address = params.addressValue
+		}
+	},
+	actions:{
+		// changemturl({commit},params){
+		// 	commit('changemturl',params)
+		// }
+	},
+	getters: {}
+}
+
+
 export default new Vuex.Store({
   modules: {
     vehicleList: vehicleList,
     filterCondition: filterCondition,
-    publishCondition: publishCondition
+    publishCondition: publishCondition,
+    publishSeekCondition: publishSeekCondition,
+    registerMsg: registerMsg
   },
 })

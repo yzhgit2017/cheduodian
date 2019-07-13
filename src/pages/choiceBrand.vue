@@ -198,6 +198,8 @@
 					this.$store.commit('filterCondition/changeBrand',{brandId: this.brandId, brandName: this.brandName, seriesId: this.seriesId, seriesName: this.seriesName, specId: this.specId, specName: this.specName});
 				}else if(this.$route.query.from == 'publishVehicle'){
 					this.$store.commit('publishCondition/changeBrand',{brandId: this.brandId, brandName: this.brandName, seriesId: this.seriesId, seriesName: this.seriesName, specId: this.specId, specName: this.specName});
+				}else if(this.$route.query.from == 'publishSeek'){
+					this.$store.commit('publishSeekCondition/changeBrand',{brandId: this.brandId, brandName: this.brandName, seriesId: this.seriesId, seriesName: this.seriesName, specId: this.specId, specName: this.specName});
 				}else{
 					this.$store.commit('vehicleList/changeBrand',{brandId: this.brandId, brandName: this.brandName, seriesId: this.seriesId, seriesName: this.seriesName, specId: this.specId, specName: this.specName});
 				}				

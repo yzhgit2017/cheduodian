@@ -27,6 +27,11 @@ import jubao from '@/pages/jubao'
 import seekVehicle from '@/pages/seekVehicle'
 import seekDetails from '@/pages/seekDetails'
 import publishSeek from '@/pages/publishSeek'
+import register from '@/pages/register'
+import personalMsg from '@/pages/personalMsg'
+import addAddress from '@/pages/addAddress'
+import notify from '@/pages/notify'
+import activeCenter from '@/pages/activeCenter'
 
 Vue.use(Router)
 
@@ -249,6 +254,46 @@ export default new Router({
       path: '/publishSeek',
       name: 'publishSeek',
       component: publishSeek,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: register,
+      meta: {
+        keepAlive: true
+      }
+    },
+    {
+      path: '/personalMsg',
+      name: 'personalMsg',
+      component: personalMsg,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/addAddress',
+      name: 'addAddress',
+      component: addAddress,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/notify',
+      name: 'notify',
+      component: notify,
+      meta: {
+        keepAlive: true
+      }
+    },
+    {
+      path: '/activeCenter',
+      name: 'activeCenter',
+      component: activeCenter,
       meta: {
         keepAlive: false
       }

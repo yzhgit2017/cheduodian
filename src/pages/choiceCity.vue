@@ -137,7 +137,11 @@
 				this.activeItem = id;
 			},
 			confirm: function(){
-				this.$store.commit('vehicleList/changeCity',{provinceId: this.provinceId, cityId: this.cityId, cityName: this.cityName});
+				if(this.$route.query.from == "personalMsg"){
+					this.$store.commit('registerMsg/changeCity',{provinceId: this.provinceId, cityId: this.cityId, cityName: this.cityName});
+				}else{
+					this.$store.commit('vehicleList/changeCity',{provinceId: this.provinceId, cityId: this.cityId, cityName: this.cityName});
+				}
 				this.$router.goBack();
 			}
 		}

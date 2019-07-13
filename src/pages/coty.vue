@@ -44,6 +44,8 @@
      			this.activeItem = index;
      			if(this.$route.query.from == 'filter'){
      				this.$store.commit('filterCondition/changeCoty',{min: min, max: max, val: val});
+     			}else if(this.$route.query.from == 'publishSeek'){
+     				this.$store.commit('publishSeekCondition/changeCoty',{min: min, max: max, val: val});
      			}else{
      				this.$store.commit('vehicleList/changeCoty',{min: min, max: max, val: val});
      			}
