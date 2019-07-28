@@ -1,18 +1,18 @@
 <template>
 	<div class="personal_content">
-        <div class="personal_head"><img src="../assets/images/personal_top.png"><p class="personal_title">个人中心</p></div>
+        <div class="personal_head"><img src="../assets/images/personal_top.png"><p class="personal_title">个人中心<span @click="editPersonalMsg()" style="float: right;position: absolute;right: 0.2rem;font-size: 0.3rem;font-weight: normal;">编辑资料</span></p></div>
         <div class="personal_menu">
             <div class="personal_card">
-                <div class="touxiang"><img src="../assets/images/touxiang.png"></div>
-                <p class="p1">大众二手车</p>
-                <p class="p2">1561****123</p>
+                <div class="touxiang"><img :src="http + touxiang"></div>
+                <p class="p1">{{userName}}</p>
+                <p class="p2">{{userTel}}</p>
                 <div class="bottom">
                     <div class="item">
-                        <p class="text1">调度会员</p>
+                        <p class="text1">{{userStatus}}</p>
                         <p class="text2">商家状态</p>
                     </div>
                     <a class="item" href="myDuobi.html">
-                        <p class="text1">10000</p>
+                        <p class="text1">{{myDuobi}}</p>
                         <p class="text2">我的多币</p>
                     </a>
                 </div>
@@ -38,10 +38,10 @@
                         </router-link>
                     </li>
                     <li>
-                        <a href="myCollection.html">
+                        <router-link to="/myCollection">
                             <div class="personal_img_container"><div class="personal_menu_img" style="width: 0.42rem;height: 0.39rem;line-height: 0.39rem;"><img src="../assets/images/sccy.png"></div></div>
                             <p class="personal_menu_text">收藏车源</p>
-                        </a>
+                        </router-link>
                     </li>
                 </ul>
             </div>
@@ -55,37 +55,37 @@
             	<tbody>
 	                <tr>
 	                    <td>
-	                        <div class="text1">-</div>
+	                        <div class="text1">{{zaishou}}</div>
 	                        <div class="text2">在售</div>
 	                    </td>
 	                    <td>
-	                        <div class="text1">24</div>
+	                        <div class="text1">{{cheliangchakan}}</div>
 	                        <div class="text2">车辆查看</div>
 	                    </td>
 	                    <td>
-	                        <div class="text1">4255</div>
+	                        <div class="text1">{{lianxicheyuan}}</div>
 	                        <div class="text2">联系车源</div>
 	                    </td>
 	                    <td style="border: 0;">
-	                        <div class="text1">65</div>
+	                        <div class="text1">{{yikancheyuan}}</div>
 	                        <div class="text2">已看车源</div>
 	                    </td>
 	                </tr>
 	                <tr style="border: 0;">
-	                    <td>
-	                        <div class="text1">10000</div>
+	                    <td style="padding-top: 0.2rem;">
+	                        <div class="text1">{{jinrifache}}</div>
 	                        <div class="text2">今日发车</div>
 	                    </td>
-	                    <td>
-	                        <div class="text1">24</div>
+	                    <td style="padding-top: 0.2rem;">
+	                        <div class="text1">{{jinrichakan}}</div>
 	                        <div class="text2">今日查看</div>
 	                    </td>
-	                    <td>
-	                        <div class="text1">4255</div>
+	                    <td style="padding-top: 0.2rem;">
+	                        <div class="text1">{{jinrilianxi}}</div>
 	                        <div class="text2">今日联系</div>
 	                    </td>
-	                    <td style="border: 0;">
-	                        <div class="text1">65</div>
+	                    <td style="border: 0;padding-top: 0.2rem;">
+	                        <div class="text1">{{benyuekanche}}</div>
 	                        <div class="text2">本月看车</div>
 	                    </td>
 	                </tr>
@@ -93,7 +93,7 @@
             </table>
         </div>
         <div class="personal_logOff">
-            <p class="btn">退出登录</p>
+            <p class="btn" @click="tuichu()">退出登录</p>
         </div>
         <footer-bar :footerActive="currentPage"></footer-bar>
     </div>
@@ -105,15 +105,81 @@
 		name: 'personalPage',
 		data(){
 			return {
-				"currentPage":"geren"
+				currentPage: "geren",
+				token: localStorage.getItem("myToken"),
+				http: this.$http,
+				zaishou: '-',
+				cheliangchakan: '-',
+				lianxicheyuan: '-',
+				yikancheyuan: '-',
+				jinrifache: '-',
+				jinrichakan: '-',
+				jinrilianxi: '-',
+				benyuekanche: '-',
+				myDuobi: '-',
+				touxiang: '',
+				userName: '',
+				userTel: '',
+				userStatus: ''
 			}
 		},
 		components:{footerBar},
 		mounted(){
-
+			this.loadData();
 		},
 		methods:{
-
+			loadData: function(){
+				const that = this;
+				this.$fetchPost('/getPersonalData',{token: this.token}).then(function(res){
+					console.log(res)
+					if(res.code == 1){
+						that.zaishou = res.data.online;
+						that.cheliangchakan = res.data.allbrowsenum;
+						that.lianxicheyuan = res.data.allphonenum;
+						that.yikancheyuan = res.data.allintercollectionnum;
+						that.jinrifache = res.data.todaysendcar;
+						that.jinrichakan = res.data.singlebrowsenum;
+						that.jinrilianxi = res.data.singlephonenum;
+						that.benyuekanche = res.data.singleintercollectionnum;
+					}				
+				});
+				this.$fetchPost('/userPersonalToaldb',{token: this.token}).then(function(res){
+					console.log(res)
+					if(res.code == 1){
+						that.myDuobi = res.data.total
+					}				
+				});
+				this.$fetchPost('/GetUserDetail',{token: this.token}).then(function(res){
+					console.log(res)
+					if(res.code == 1){
+						that.touxiang = res.data.img;
+						that.userName = res.data.user_name;
+						that.userTel = res.data.user_tel_sta;
+						that.userStatus = res.data.level_name;
+						var data = {
+							mturl: res.data.img,
+							qturl: res.data.photo,
+							storeName: res.data.shop_name,
+							fuzeren: res.data.user_name,
+							tel: res.data.user_tel,
+							province: res.data.province_id,
+							cityText: res.data.room_city_name,
+							cityId: res.data.room_city,
+							marketText: res.data.market_name,
+							marketId: res.data.market,
+							address: res.data.address
+						}
+						that.$store.commit("registerMsg/init",data)
+					}				
+				});
+			},
+			editPersonalMsg: function(){
+				this.$router.push("/personalMsg")
+			},
+			tuichu: function(){
+				localStorage.clear();
+				this.$router.push("/login");
+			}
 		}
 	}
 </script>

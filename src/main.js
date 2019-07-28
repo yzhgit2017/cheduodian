@@ -12,6 +12,8 @@ import Toast from '@/components/toast/toast'
 import singleImgZoom from '@/components/singleImgZoom/singleImgZoom'
 import swiperImgZoom from '@/components/swiperImgZoom/swiperImgZoom'
 import { loadmore, spinner, picker } from 'mint-ui'
+import axios from 'axios'
+import qs from 'qs'
 
 Vue.config.productionTip = false
 
@@ -21,8 +23,10 @@ Vue.prototype.$myToast = myToast
 Vue.prototype.$toast = Toast
 Vue.prototype.$singleImgZoom = singleImgZoom
 Vue.prototype.$swiperImgZoom = swiperImgZoom
-// Vue.prototype.$http = 'http://cheduodian.mcbn.cn'
-Vue.prototype.$http = 'http://nw.cheduodian.com'
+Vue.prototype.$axios = axios
+Vue.prototype.$qs = qs
+Vue.prototype.$http = 'http://cheduodian.mcbn.cn'
+// Vue.prototype.$http = 'http://nw.cheduodian.com'
 
 Vue.component(loadmore.name, loadmore)
 Vue.component(spinner.name, spinner)

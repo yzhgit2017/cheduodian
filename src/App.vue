@@ -48,7 +48,8 @@
 
 <style>
 	#app{
-		
+		overflow-x: hidden;
+		height: 100%;
 	}
 	.loadingImg{
 		position: fixed;
@@ -65,11 +66,13 @@
 	}
 	.slide-left-enter, .slide-left-leave-to {
 	  -webkit-transform: translateX(-100%);
+	  /*position: absolute;*/
 	}
 	.slide-right-enter-active, .slide-right-leave-active {
 	  transition: -webkit-transform .2s;
 	}
 	.slide-right-enter, .slide-right-leave-to {
 	  -webkit-transform: translateX(100%);
+	  /*position: absolute;*/
 	}
 </style>

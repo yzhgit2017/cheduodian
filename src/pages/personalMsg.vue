@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="container">
 		<header1 v-bind:title="title"></header1>
 		<div class="pad"></div>
 		<div class="lanmu1">资质照片</div>
@@ -41,12 +41,10 @@
 					<div class="msg_right"><label>{{city}}</label><img src="../assets/images/right_arrow.png" class="right_arrow"></div>
 				</div>
 			</router-link>
-			<router-link :to="{path: 'choiceMarket', query: {from: 'personalMsg'}}">
-				<div class="store_msg_item">
-					<div class="msg_left">选择市场</div>
-					<div class="msg_right"><label>{{market}}</label><img src="../assets/images/right_arrow.png" class="right_arrow"></div>
-				</div>
-			</router-link>
+			<div class="store_msg_item" @click="goChoiceMarket()">
+				<div class="msg_left">选择市场</div>
+				<div class="msg_right"><label>{{market}}</label><img src="../assets/images/right_arrow.png" class="right_arrow"></div>
+			</div>
 			<router-link :to="{path: 'addAddress'}">
 				<div class="store_msg_item" style="border-bottom: 0;">
 					<div class="msg_left">详细地址</div>
@@ -74,7 +72,7 @@
 				tel: '',
 				city: '',
 				market: '',
-				address: ''
+				address: '',
 			}
 		},
 		components: {header1},
@@ -84,6 +82,7 @@
 		    }
 		},
 		mounted(){
+			console.log(this.personalMsgData)
 			this.mturl = this.personalMsgData.data.mturl;
 			this.qturl = this.personalMsgData.data.qturl;
 			this.storeName = this.personalMsgData.data.storeName;
@@ -126,6 +125,16 @@
 						that.$store.commit("registerMsg/changeqturl",{qturl: res.url})
 					}
 				})
+			},
+			goChoiceMarket: function () {
+				if(this.city == "城市"){
+					this.$myToast({
+						message: '请选择城市',
+						type: 'warning'
+					})
+				}else{
+					this.$router.push({path: '/choiceMarket',query: {from: 'personalMsg'}});
+				}
 			},
 			saveStoreName: function(){
 				this.$store.commit("registerMsg/changeStoreName",{storeName: this.storeName.trim()})
@@ -187,7 +196,18 @@
 					})
 		    	    return false;
 				}else{
-				    const data = {token: this.token,shop_name: this.storeName,user_name: this.fuzeren,img: this.mturl,photo: this.qturl,user_tel: this.tel,province_id: this.personalMsgData.data.province,room_city: this.personalMsgData.data.city.id,market: this.personalMsgData.data.market.id,address: this.personalMsgData.data.address};
+				    const data = {
+				    	token: this.token,
+				    	shop_name: this.storeName,
+				    	user_name: this.fuzeren,
+				    	img: this.mturl,
+				    	photo: this.qturl,
+				    	user_tel: this.tel,
+				    	province_id: this.personalMsgData.data.province,
+				    	room_city: this.personalMsgData.data.city.id,
+				    	market: this.personalMsgData.data.market.id,
+				    	address: this.personalMsgData.data.address
+				    };
 				    const that = this;
 					this.$fetchPost('/cdd_eduser',data).then(function(res){
 						console.log(res)
@@ -208,6 +228,10 @@
 </script>
 
 <style scoped>
+	.container{
+		height: 100%;
+		overflow-y: scroll;
+	}
 	.pad{
 		height: 0.88rem;
 	}

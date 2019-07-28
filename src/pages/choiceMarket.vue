@@ -63,7 +63,8 @@
 			return {
 				title: '选择市场',
 				token: localStorage.getItem('myToken'),
-				marketData: ''
+				marketData: '',
+				cityId: ''
 			}
 		},
 		components: { header1 },
@@ -71,12 +72,19 @@
 			this.loadMarket();
 		},
 		computed: mapState({
-		   data: state => state.vehicleList,
+		   filterData: state => state.filterCondition,
+		   msgData: state => state.registerMsg
 		}),
 		methods:{
 			loadMarket: function(){
 				var _this = this;
-				this.$fetchPost('/CarMarketList',{token: this.token, id: this.data.data.city.id}).then(function(res){
+				if(this.$route.query.from == "personalMsg"){
+					this.cityId = this.msgData.data.city.id
+				}
+				if(this.$route.query.from == "filter"){
+					this.cityId = this.filterData.data.city.id
+				}
+				this.$fetchPost('/CarMarketList',{token: this.token, id: this.cityId}).then(function(res){
 					console.log(res)
 					if(res.code == 1){
 						_this.marketData = res.data;

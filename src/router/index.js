@@ -32,6 +32,8 @@ import personalMsg from '@/pages/personalMsg'
 import addAddress from '@/pages/addAddress'
 import notify from '@/pages/notify'
 import activeCenter from '@/pages/activeCenter'
+import mendCheck from '@/pages/mendCheck'
+import checkRecord from '@/pages/checkRecord'
 
 Vue.use(Router)
 
@@ -294,6 +296,22 @@ export default new Router({
       path: '/activeCenter',
       name: 'activeCenter',
       component: activeCenter,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/mendCheck',
+      name: 'mendCheck',
+      component: mendCheck,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/checkRecord',
+      name: 'checkRecord',
+      component: checkRecord,
       meta: {
         keepAlive: false
       }

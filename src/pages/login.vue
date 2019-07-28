@@ -7,8 +7,17 @@
 	        <p class="write_input"><img src="../assets/images/shouji.png" class="shoujiIcon" /><input type="text" name="" placeholder="账号" v-model="username"></p>
 	        <p class="write_input"><img src="../assets/images/mima.png" class="mimaIcon" /><input type="password" name="" placeholder="密 码" v-model="password"></p>
 	        <p class="login_anniu" id="login_btn" @click="login()">登录</p>
-	        <p style="margin-bottom: 0.3rem;overflow: hidden;"><span class="toget_pwd">忘记密码</span><span class="to_register">立即注册</span></p>
+	        <p style="margin-bottom: 0.3rem;overflow: hidden;"><span class="toget_pwd" @click="zhaomima()">忘记密码</span><span class="to_register" @click="zhuce()">立即注册</span></p>
 	    </form>
+	    <!--弹出-->
+		<div class="half" v-show="bodaShow"></div>
+	  	<div class="dialog" v-show="bodaShow">
+		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi" @click="quxiao()"></i></p>
+		   	<p class="xzhifu xzhifu1" style="text-align: center;">请直接联系客服</p>
+			<p class="xzhifu" style="text-align: center;">0539-8321998</p>
+		    <p class="putong"><span class="xquxiao" @click="quxiao()">取消</span><a href="javascript:;" @click="call()" style="display: block;width: 50%;height: 100%;float: left;">拨打</a></p>
+	  	</div>
+		<!--弹出-->	
 	</div>
 </template>
 
@@ -18,8 +27,12 @@
 		data(){
 			return {
 				username: '',
-				password: ''
+				password: '',
+				bodaShow: false,
 			}
+		},
+		mounted(){
+			
 		},
 		methods:{
 			login: function(){
@@ -38,6 +51,18 @@
 					localStorage.setItem('myUserTelSta',res.data.user_tel_sta);
 					_this.$router.push("/homePage");
 				})
+			},
+			quxiao: function(){
+				this.bodaShow = false;
+			},
+			zhaomima: function(){
+				this.bodaShow = true;
+			},
+			call: function(){
+				window.location.href = "tel: 0539-8321998";
+			},
+			zhuce: function(){
+				this.$router.push("register");
 			}
 		}
 	}
@@ -46,6 +71,7 @@
 <style scoped>
 	.container{
 		height: 100%;
+		overflow-y: scroll;
 	}
 	.register_head img{
 		width: 100%;
@@ -110,5 +136,80 @@
 	    margin-top: .4rem;
 	    color: #FF620C;
 	    font-size: .28rem;
+	}
+	.half {
+	    width: 100%;
+	    height: 100%;
+	    background-color: rgba(0,0,0,0.3);
+	    position: fixed;
+	    top: 0;
+	    left: 0;
+	    z-index: 99999;
+	}
+	.dialog {
+	    width: 5.92rem;
+	    height: 4.26rem;
+	    position: fixed;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	    top: 0;
+	    margin: auto;
+	    z-index: 99999;
+	    border-radius: 0.1rem;
+	    background: #FFFFFF;
+	    overflow: hidden;
+	}
+	.tantit1 {
+	    line-height: 0.86rem;
+	    height: 0.86rem;
+	    font-size: 0.3rem;
+	    color: #000000;
+	    padding: 0 0.41rem;
+	    background: #EEEFF0;
+	    border-top-left-radius: 0.1rem;
+	    border-top-right-radius: 0.1rem;
+	}
+	.xzhifu {
+	    padding: 0 0.45rem;
+	    font-size: 0.28rem;
+	    color: #000000;
+	    line-height: 0.48rem;
+	}
+	.xzhifu1 {
+	    padding-top: 0.7rem;
+	}
+	.guanbi {
+	    float: right;
+	    font-size: 0.4rem !important;
+	    color: #666666;
+	}
+	.putong {
+	    overflow: hidden;
+	    background: #FF620C;
+	    width: 100%;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    text-align: center;
+	    position: absolute;
+	    bottom: 0;
+	    left: 0;
+	    border-bottom-right-radius: 0.1rem;
+	    border-bottom-left-radius: 0.1rem;
+	}
+	.xquxiao {
+	    width: 50%;
+	    height: 100%;
+	    float: left;
+	    background: #FFFFFF;
+	    border-bottom-left-radius: 0.1rem;
+	    font-size: 0.3rem;
+	    color: #8A8F9B;
+	    border-top: 1px solid #EFEFEF;
+	    box-sizing: border-box;
+	}
+	.putong a {
+	    color: #FFFFFF;
+	    font-size: 0.3rem;
 	}
 </style>

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="container">
 		<header1 v-bind:title="title"></header1>
 		<div class="hehight"></div>
 		<p class="zhuxcehao"><input type="text" placeholder="请输入账号" v-model="zhanghao" /></p>
@@ -18,10 +18,13 @@
 				title: '注册',
 				zhanghao: '',
 				psw: '',
-				pswrepeat: ''
+				pswrepeat: '',
 			}
 		},
 		components: {header1},
+		mounted(){
+			
+		},
 		methods: {
 			next: function(){
 				if(this.zhanghao.trim() == ''){
@@ -70,8 +73,22 @@
 								type: 'success'
 							})
 							localStorage.setItem("myToken",res.data.token);
+							var data = {
+								mturl: '',
+								qturl: '',
+								storeName: '',
+								fuzeren: '',
+								tel: '',
+								province: '',
+								cityText: '城市',
+								cityId: '',
+								marketText: '二手车市场',
+								marketId: '',
+								address: ''
+							}
+							that.$store.commit("registerMsg/init",data)
 							setTimeout(function(){
-								this.$router.push({path: '/personalMsg'})
+								that.$router.push({path: '/personalMsg'})
 							},1000)
 						}
 					})
@@ -82,6 +99,11 @@
 </script>
 
 <style scoped>
+	.container{
+		height: 100%;
+		overflow-y: scroll;
+		position: relative;
+	}
 	.hehight{
 		height: 0.88rem;
 	}

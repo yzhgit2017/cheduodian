@@ -1,5 +1,5 @@
 <template>
-	<div class="container">
+	<div class="container" ref="pContainer">
 		<header1 v-bind:title="title">
 			<template v-slot:navRightBtn>
 				<label style="font-size: .32rem;color: #FF620C;" @click="lijifache()">发布</label>
@@ -358,10 +358,12 @@
 				if(this.chekuangColor != ''){
 					const ot = this.$refs.myCanvas.offsetTop;
 					const ol = this.$refs.myCanvas.offsetLeft;
+					const st = this.$refs.pContainer.scrollTop;
 					const px = event.touches[0].pageX;
 					const py = event.touches[0].pageY;
 					const pl = px - ol - 10;
-					const pt = py - ot - 10;
+					const pt = py - (ot - st) - 10;
+					console.log(py,ot)
 					const style = "left:"+ pl +"px;top:" + pt +"px;background-color:"+ this.chekuangColor +"";
 					this.pointData.push(style);
 					this.car_color_id.push(this.colorId);

@@ -1,7 +1,6 @@
 <template>
 	<div class="container">
-		<header2></header2>
-		
+		<header2 @childCompentSearch="parentCompentSearch"></header2>
 		<div class="ershouche_list_content">
 		    <div style="height: 0.88rem;"></div>
 			<div class="dis"></div>
@@ -50,7 +49,7 @@
 										<div class="state">车况:{{item.car_score}}</div>
 									</div>
 									<div class="p4">
-										<div class="price"><span>{{item.wholesale_money}}</span>万</div>
+										<div class="price"><span v-if="isWholesale == 1">{{item.wholesale_money}}</span><span v-else>{{item.money}}</span>万</div>
 										<div class="lianxi" @click="call(item.id,item.usertel)">联系卖家</div>
 									</div>
 								</div>
@@ -112,25 +111,17 @@
                 pbodaShow: false,
                 plianxiShow: false,
                 pseeShow: false,
-                pphoneNum: ''
+                pphoneNum: '',
+                isWholesale: ''
 			}
 		},
 		created(){
-			var _this = this;
-			console.log("创建",this.filterData.data)
-			var data = this.requestData(this.filterData.data.sort.id)
 			if(this.$route.params.from == 'wholesaleVehicle'){
-				this.$fetchPost('/wholCarSource',data).then(function(res){
-					console.log(res)
-					_this.vehicleData = res.data.data;
-					// _this.$refs.loadmore.onTopLoaded();
-					if(res.data.total < _this.pagenum){
-						_this.publishSeek = true;
-						_this.allLoaded = true;
-					}
-					
-				})
+				this.isWholesale = 1;
+			}else{
+				this.isWholesale = 0;
 			}
+			this.resetData();
             //改变筛选项的说明文字
 			let initData = this.filterData.data;
 			if(initData.cartype.text != ''){
@@ -206,20 +197,9 @@
 			paixu: function(id,text){
 				this.$store.commit('vehicleList/changeSort',{sortId: id, sortName: text});
 				this.paixu1 = '<span class="span3">'+ text +'</span>'
-				var _this = this;
-				var data = this.requestData(id)
-				if(this.$route.params.from == 'wholesaleVehicle'){
-					this.$fetchPost('/wholCarSource',data).then(function(res){
-						console.log(res)
-						_this.vehicleData = res.data.data;
-						_this.$refs.loadmore.onTopLoaded();
-						if(res.data.total < _this.pagenum){
-							_this.publishSeek = true;
-							_this.allLoaded = true;
-						}
-						_this.show = !_this.show;
-					})
-				}
+				this.page = 1;
+				this.resetData();
+				this.show = !this.show;
 			},
 			handleBottomChange(status) {
 		        this.bottomStatus = status;
@@ -230,21 +210,45 @@
 				if(this.$route.params.from == 'wholesaleVehicle'){
 					this.$fetchPost('/wholCarSource',data).then(function(res){
 						console.log(res)
-						if(res.data.total < _this.pagenum){
-							_this.vehicleData = _this.vehicleData.concat(res.data.data);
-							_this.$refs.loadmore.onBottomLoaded();
-							_this.publishSeek = true;
-							_this.allLoaded = true;
-						}else{
-							if(_this.vehicleData.length < res.data.total){
+						if(res.code == 200){
+							if(res.data.total < _this.pagenum){
 								_this.vehicleData = _this.vehicleData.concat(res.data.data);
-							    _this.$refs.loadmore.onBottomLoaded();
-							}else{
+								_this.$refs.loadmore.onBottomLoaded();
 								_this.publishSeek = true;
 								_this.allLoaded = true;
-								_this.$refs.loadmore.onBottomLoaded();
+							}else{
+								if(_this.vehicleData.length < res.data.total){
+									_this.vehicleData = _this.vehicleData.concat(res.data.data);
+								    _this.$refs.loadmore.onBottomLoaded();
+								}else{
+									_this.publishSeek = true;
+									_this.allLoaded = true;
+									_this.$refs.loadmore.onBottomLoaded();
+								}
 							}
 						}									
+					})
+				}
+				if(this.$route.params.from == 'cityVehicle'){
+					this.$fetchPost('/getCarList',data).then(function(res){
+						console.log(res)
+						if(res.code == 200){
+							if(res.data.total < _this.pagenum){
+								_this.vehicleData = _this.vehicleData.concat(res.data.data);
+								_this.$refs.loadmore.onBottomLoaded();
+								_this.publishSeek = true;
+								_this.allLoaded = true;
+							}else{
+								if(_this.vehicleData.length < res.data.total){
+									_this.vehicleData = _this.vehicleData.concat(res.data.data);
+								    _this.$refs.loadmore.onBottomLoaded();
+								}else{
+									_this.publishSeek = true;
+									_this.allLoaded = true;
+									_this.$refs.loadmore.onBottomLoaded();
+								}
+							}
+						}								
 					})
 				}
 				this.page++;
@@ -260,19 +264,37 @@
 		        this.moveTranslate = (1 + translateNum / 70).toFixed(2);
 		    },
 		    loadTop() {
-		        var _this = this;
 		        this.publishSeek = false;
-				var data = this.requestData(this.filterData.data.sort.id)
-				if(this.$route.params.from == 'wholesaleVehicle'){
+				this.page = 1;
+				this.resetData()
+		    },
+		    resetData: function(){
+		    	var _this = this;
+		    	var data = this.requestData(this.filterData.data.sort.id)
+		    	if(this.$route.params.from == 'wholesaleVehicle'){
 					this.$fetchPost('/wholCarSource',data).then(function(res){
 						console.log(res)
-						_this.vehicleData = res.data.data;
-						_this.$refs.loadmore.onTopLoaded();
-						if(res.data.total < _this.pagenum){
-							_this.publishSeek = true;
-							_this.allLoaded = true;
+						if(res.code == 200){
+							_this.vehicleData = res.data.data;
+							_this.$refs.loadmore.onTopLoaded();
+							if(res.data.total < _this.pagenum){
+								_this.publishSeek = true;
+								_this.allLoaded = true;
+							}
 						}
-						
+					})
+				}
+				if(this.$route.params.from == 'cityVehicle'){
+					this.$fetchPost('/getCarList',data).then(function(res){
+						console.log(res)
+						if(res.code == 200){
+							_this.vehicleData = res.data.data;
+							_this.$refs.loadmore.onTopLoaded();
+							if(res.data.total < _this.pagenum){
+								_this.publishSeek = true;
+								_this.allLoaded = true;
+							}
+						}
 					})
 				}
 		    },
@@ -334,6 +356,11 @@
 		    pseeClose: function(){
 		    	this.pseeShow = false;
 				this.phalfShow = false;
+		    },
+		    parentCompentSearch: function(value){
+		    	console.log(value)
+		    	this.page = 1;
+		    	this.resetData();
 		    }
 		}
 	}
@@ -342,6 +369,7 @@
 <style scoped>
 	.container{
 		height: 100%;
+		position: relative;
 	}
 	.ershouche_list_content{
 	    /*margin-top: 0.88rem;

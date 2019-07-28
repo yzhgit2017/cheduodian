@@ -11,7 +11,7 @@
 			        </span>
 		        </div>
 				<ul class="record_list global_ul_list" v-for="(item,index) in activeData" :key="index">
-					<div class="fuche" v-if="item.type == 1">
+					<div class="fuche" v-if="item.type == 1" @click="showDes(item.info)">
 						<p class="fachebi">
 							<span class="faspan1">{{item.title}}</span>
 							<span class="chenum">{{item.total_num}}/{{item.sum_n_day}}</span>
@@ -25,7 +25,7 @@
 						<p class="duofade">{{item.info}}</p>
 						<p class="yifade">今日已发布车辆{{item.total_num}}次！<span class="yides">已得<span>{{item.total_money}}</span>多币</span></p>
 					</div>
-					<div class="fuche" v-if="item.type == 8">
+					<div class="fuche" v-if="item.type == 8" @click="showDes(item.info)">
 						<p class="fachebi">
 							<span class="faspan1">{{item.title}}</span>
 							<span class="chenum">{{item.total_num}}/{{item.sum_n_day}}</span>
@@ -39,7 +39,7 @@
 						<p class="duofade">{{item.info}}</p>
 						<p class="yifade">今日已登录{{item.total_num}}次！<span class="yides">已得<span>{{item.total_money}}</span>多币</span></p>
 					</div>
-					<div class="fuche" v-if="item.type == 6">
+					<div class="fuche" v-if="item.type == 6" @click="showDes(item.info)">
 						<p class="fachebi">
 							<span class="faspan1">{{item.title}}</span>
 							<span class="chenum">{{item.total_num}}/{{item.sum_n_day}}</span>
@@ -53,7 +53,7 @@
 						<p class="duofade">{{item.info}}</p>
 						<p class="yifade">今日已发布求购{{item.total_num}}次！<span class="yides">已得<span>{{item.total_money}}</span>多币</span></p>
 					</div>
-					<div class="fuche" v-if="item.type == 6">
+					<div class="fuche" v-if="item.type == 7" @click="showDes(item.info)">
 						<p class="fachebi">
 							<span class="faspan1">{{item.title}}</span>
 							<span class="chenum">{{item.total_num}}/{{item.sum_n_day}}</span>
@@ -76,6 +76,12 @@
 		        </div>
 			</mt-loadmore>
 		</div>
+		<div class="half" v-show="tishiShow"></div>
+	  	<div class="dialog" v-show="tishiShow">
+		    <p class="tantit1">提示<i class="icon iconfont icon-cuowu guanbi" @click="tishiClose()"></i></p>
+		    <p class="tancon1">{{tishi}}</p>
+		    <p class="putong" @click="tishiClose()">知道了</p>
+	  	</div>
 	</div>
 </template>
 
@@ -96,7 +102,9 @@
                 token: localStorage.getItem('myToken'),
                 page: 1,
                 pagenum: 15,
-                city: localStorage.getItem('myRoomCityId')
+                city: localStorage.getItem('myRoomCityId'),
+                tishi: '',
+                tishiShow: false
 			}
 		},
 		components:{header1},
@@ -161,6 +169,13 @@
 					that.$refs.loadmore.onBottomLoaded()
 				})
 		    },
+		    showDes: function (info) {
+		    	this.tishiShow = true;
+		    	this.tishi = info;
+		    },
+		    tishiClose: function () {
+		    	this.tishiShow = false;
+		    }
 	    }
 	}
 </script>
@@ -225,6 +240,67 @@
 	}
 	.yides span {
 	    color: #FF620C;
+	}
+	.half {
+	    width: 100%;
+	    height: 100%;
+	    background-color: rgba(0,0,0,0.3);
+	    position: fixed;
+	    top: 0;
+	    left: 0;
+	    z-index: 99999;
+	}
+	.dialog {
+	    width: 5.92rem;
+	    height: 4.26rem;
+	    position: fixed;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	    top: 0;
+	    margin: auto;
+	    z-index: 99999;
+	    border-radius: 0.1rem;
+	    background: #FFFFFF;
+	    overflow: hidden;
+	}
+	.tantit1 {
+	    line-height: 0.86rem;
+	    height: 0.86rem;
+	    font-size: 0.3rem;
+	    color: #000000;
+	    padding: 0 0.41rem;
+	    background: #EEEFF0;
+	    border-top-left-radius: 0.1rem;
+	    border-top-right-radius: 0.1rem;
+	}
+	.guanbi {
+	    float: right;
+	    font-size: 0.4rem !important;
+	    color: #666666;
+	}
+	.putong{
+		overflow: hidden;
+	    width: 100%;
+	    height: 0.86rem;
+	    line-height: 0.86rem;
+	    text-align: center;
+	    position: absolute;
+	    bottom: 0;
+	    left: 0;
+	    color: #FFFFFF;
+        font-size: 0.3rem;
+        background: #FF620C;
+	}
+	.tancon1 {
+	    width: 5rem;
+	    font-size: 0.3rem;
+	    color: #000000;
+	    position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    transform: translate(-50%,-50%);
+	    -webkit-transform: translate(-50%,-50%);
 	}
 	/*pull style*/
 	.page-loadmore-wrapper{

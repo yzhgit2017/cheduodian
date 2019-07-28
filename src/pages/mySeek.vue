@@ -120,6 +120,9 @@
 					that.$refs.loadmore.onBottomLoaded()
 				})
 		    },
+		    publishSeek: function() {
+		    	this.$router.push({path: '/publishSeek', query: {type: 1}});
+		    }
 	    }
 	}
 </script>

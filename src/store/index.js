@@ -102,6 +102,9 @@ const vehicleList = {
 			state.data.color.text = '';
 			state.data.color.id = '';
 		},
+		changeSearch(state,params){
+			state.data.search = params.searchContent;
+		},
 		changePAC(state,params){
 			state.data.province = params.provinceId;
 			state.data.city.text = params.cityText;
@@ -140,7 +143,7 @@ const vehicleList = {
 		},
 		changeSort(state,params){
 			state.data.sort.id = params.sortId;
-			state.data.sort.text = params.sortText;
+			state.data.sort.text = params.sortName;
 		},
 		changeMileage(state,params){
 			state.data.minmileage = params.min;
@@ -517,6 +520,23 @@ const publishSeekCondition = {
 		}
 	},
 	mutations: {
+		init(state){
+			state.data.brand.text = '';
+			state.data.brand.id = '';
+			state.data.series.text = '';
+			state.data.series.id = '';
+			state.data.spec.text = '';
+			state.data.spec.id = '';
+			state.data.color.text = '';
+			state.data.color.id = '';
+			state.data.minage = '';
+			state.data.maxage = '';
+			state.data.age = '';
+			state.data.cusName = '';
+			state.data.cusTel = '';
+			state.data.beizhu = '';
+			state.data.xsstate = 2;
+		},
 		changeBrand(state,params){
 			state.data.brand.text = params.brandName;
 			state.data.brand.id = params.brandId;
@@ -573,6 +593,19 @@ const registerMsg = {
 		}
 	},
 	mutations: {
+		init(state,params){
+			state.data.mturl = params.mturl;
+			state.data.qturl = params.qturl;
+			state.data.storeName = params.storeName;
+			state.data.fuzeren = params.fuzeren;
+			state.data.tel = params.tel;
+			state.data.province = params.province;
+			state.data.city.text = params.cityText;
+			state.data.city.id = params.cityId;
+			state.data.market.text = params.marketText;
+			state.data.market.id = params.marketId;
+			state.data.address = params.address;
+		},
 		changemturl(state,params){
 			state.data.mturl = params.mturl;
 		},

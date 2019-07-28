@@ -4,7 +4,7 @@
 			<div class="left_arrow" @click="goBack()">
 				<img src="../assets/images/left_arrow.png">
 			</div>
-			<div class="search"><img src="../assets/images/searchIcon.png"><form action="" onsubmit="return false;" id="searchForm" style="margin:0;display: inherit;"><input type="search" name="" placeholder="搜索您要找的车辆" id="searchContent"></form></div>
+			<div class="search"><img src="../assets/images/searchIcon.png"><form action="" @submit="search()" style="margin:0;display: inherit;"><input type="search" name="" v-model="searchContent" placeholder="搜索您要找的车辆"></form></div>
 			<div class="order" @click="goFilter()"><img src="../assets/images/orderIcon.png"></div>
 			<div class="share" id="share_btn"><img src="../assets/images/shareIcon.png"></div>
 		</div>
@@ -16,11 +16,16 @@
 	export default{
 		name: 'header2',
 		data(){
-			return {}
+			return {
+				searchContent: ''
+			}
 		},
 		computed: mapState({
 		   data: state => state.vehicleList,
 		}),
+		mounted(){
+			this.searchContent = this.data.data.search;
+		},
 		methods: {
 			goBack: function(){
 				this.$router.goBack();
@@ -60,6 +65,10 @@
 					colorText: this.data.data.color.text
 				});
 				this.$router.push('/filter');
+			},
+			search: function(){
+				this.$store.commit('vehicleList/changeSearch',{searchContent: this.searchContent});
+				this.$emit("childCompentSearch",this.searchContent)
 			}
 		}
 	}
@@ -145,5 +154,8 @@
 	    width: 100%;
 	    height: 100%;
 	    vertical-align: top;
+	}
+	input[type=search]::-webkit-search-cancel-button{
+	    -webkit-appearance: none;
 	}
 </style>

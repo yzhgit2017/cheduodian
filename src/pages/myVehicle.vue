@@ -241,7 +241,7 @@
 		    choice: function(bs){
 		    	this.state = bs;
 		    	this.myVehicleData = [];
-		    	this.shuaxinData(bs);
+		    	this.xiugaiData();
 		    },
 		    goDetails: function(id){
 		    	this.st = this.$refs.wrapper.scrollTop;

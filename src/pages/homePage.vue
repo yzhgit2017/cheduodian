@@ -1,12 +1,12 @@
 <template>
-	<div class="container">
+	<div class="componentContainer" :style="{ height: wrapperHeight + 'px' }">
 		<div class="index_nav">
 	        <div class="container">
 	            <p class="city" id="choiceCity">
-	                <span>北京</span>
-	                <label class="arrow"></label>
+	                <span>{{city}}</span>
+	                <!-- <label class="arrow"></label> -->
 	            </p>
-	            <div class="message" id="Notify"></i><label>99+</label></div>
+	            <!-- <div class="message" id="Notify"></i><label>99+</label></div> -->
 	        </div>
 	    </div>
 	    <div class="index_content">
@@ -14,7 +14,7 @@
 	        <div class="menu_container">
 	            <div class="index_search">
 	                <span class="searchIcon"></span>
-	                <input type="text" name="" placeholder="搜索品牌/车型/年款">
+	                <form action="" @submit="search()" style="margin:0;display: inherit;"><input type="search" name="" placeholder="搜索品牌/车型/年款" v-model="searchContent"></form>
 	            </div>
 	            <div class="menu_list">
 	                <ul>
@@ -26,21 +26,17 @@
                             <div class="menu_img"><img src="../assets/images/cyfb.png"></div>
                             <p class="menu_text">车源发布</p>
 	                    </li>
-	                    <li>	               
+	                    <li @click="goSeekVehicle()">	               
                             <div class="menu_img"><img src="../assets/images/dkqg.png"></div>
                             <p class="menu_text">代客求购</p>	                       
 	                    </li>
-	                    <li>
-	                        <a href="mendCheck.html">
-	                            <div class="menu_img"><img src="../assets/images/wbcx.png"></div>
-	                            <p class="menu_text">维保查询</p>
-	                        </a>
+	                    <li @click="goMendCheck()">
+                            <div class="menu_img"><img src="../assets/images/wbcx.png"></div>
+                            <p class="menu_text">维保查询</p>
 	                    </li>
-	                    <li>
-	                        <a href="activeCenter.html">
-	                            <div class="menu_img"><img src="../assets/images/hdzx.png"></div>
-	                            <p class="menu_text">活动中心</p>
-	                        </a>
+	                    <li @click="goActiveCenter()">
+                            <div class="menu_img"><img src="../assets/images/hdzx.png"></div>
+                            <p class="menu_text">活动中心</p>
 	                    </li>
 	                    <li @click="goWholesaleVehicle()">
                             <div class="menu_img"><img src="../assets/images/pfcy.png"></div>
@@ -48,15 +44,13 @@
 	                    </li>
 	                </ul>
 	            </div>
-	            <div class="index_swiper" id="swiperIndex">
+	            <div class="index_swiper">
 		            <div class="swiper-container swiper-index">
 		                <div class="swiper-wrapper">
-		                    <div class="swiper-slide"><a href=""><img src="../assets/images/lbt1.png"></a></div>
-		                    <div class="swiper-slide"><a href=""><img src="../assets/images/lbt1.png"></a></div>
+		                    <div class="swiper-slide" v-for="(item,index) in adData" :key="index"><img :src="http + item.img"></div>
 		                </div>
-		                <!-- Add Pagination -->
-		                <div class="swiper-pagination"></div>
 		            </div>
+		            <div class="dotContainer"><span class="dot" v-for="(item,index) in adData" :key="index" v-bind:class="[dotIndex == index ? 'active' : '']"></span></div>
 		        </div>
 	        </div>
 	        <footer-bar :footerActive="currentPage"></footer-bar>
@@ -72,30 +66,75 @@
 		data(){
 			return {
 				currentPage:"shouye",
+				wrapperHeight: 0,
+				city: localStorage.getItem("myRoomCity"),
+				token: localStorage.getItem("myToken"),
+				adData: [],
+				http: this.$http,
+				searchContent: '',
+				mySwiper: '',
+				dotIndex: 0
 			}
 		},
 		components:{footerBar},
 		mounted(){
-			this.lunbo();
+			this.getBanner();
+			this.wrapperHeight = document.documentElement.clientHeight;
 		},
 		methods:{
+			getBanner: function(){
+				const that = this;
+				this.$axios.post(this.$http + "/getBanner",{token: this.token,num: 5}).then(res => {
+					console.log(res)
+					if(res.data.code == 1){
+						that.adData = res.data.data;
+						that.$nextTick(function(){
+							that.lunbo()
+						})
+					}
+				})
+			},
 			lunbo: function(){
-				var swiper = new Swiper('.swiper-index', {
+				const that = this;
+				this.mySwiper = new Swiper('.swiper-index', {
 		            loop:true,
-		            pagination: {
-		                el: '.swiper-pagination',
-		            },
+		            on: {
+		            	slideChange: function(){
+					      	console.log(that.mySwiper.realIndex)
+					      	if(that.mySwiper.realIndex == undefined){
+					      		that.dotIndex = 0;
+					      	}else{
+					      		that.dotIndex = that.mySwiper.realIndex;
+					      	}
+					      	
+					    },
+		            }
 		        });
+			},
+			search: function () {
+				this.$store.commit('vehicleList/init');
+				this.$store.commit('vehicleList/changeSearch',{searchContent: this.searchContent});
+				this.$store.commit('vehicleList/changePAC',{provinceId: localStorage.getItem('myProvinceId'),cityText: localStorage.getItem('myRoomCity'),cityId: localStorage.getItem('myRoomCityId')})
+				this.$router.push("/findVehicle/cityVehicle");
 			},
 			goCityVehicle: function(){
 				this.$store.commit('vehicleList/init')
-				this.$router.push("/findVehicle/cityVehicle");
 				this.$store.commit('vehicleList/changePAC',{provinceId: localStorage.getItem('myProvinceId'),cityText: localStorage.getItem('myRoomCity'),cityId: localStorage.getItem('myRoomCityId')})
+				this.$router.push("/findVehicle/cityVehicle");
 			},
 			goWholesaleVehicle: function(){
 				this.$store.commit('vehicleList/init')
 				this.$store.commit('vehicleList/changePAC',{provinceId: 0,cityText: '全国',cityId: 0})
 				this.$router.push("/findVehicle/wholesaleVehicle");
+			},
+			goMendCheck: function () {
+				this.$router.push("/mendCheck");
+			},
+			goActiveCenter: function () {
+				this.$router.push("/activeCenter");
+			},
+			goSeekVehicle: function () {
+				this.$router.push("/seekVehicle");
 			},
 			goPublishVehicle: function(){
 				const data = {
@@ -134,7 +173,7 @@
 				}
 				this.$store.commit('publishCondition/init',data)
 				this.$store.commit('vehicleList/changePAC',{provinceId: localStorage.getItem('myProvinceId'),cityText: localStorage.getItem('myRoomCity'),cityId: localStorage.getItem('myRoomCityId')})
-				that.$router.push({path: '/publishVehicle', query: {from: 'homePage'}});
+				this.$router.push({path: '/publishVehicle', query: {from: 'homePage'}});
 			}		
 		}
 	}
@@ -145,8 +184,10 @@
     #choiceCity{
     	font-size: .24rem;
     }
-	.container{
+	.componentContainer{
 		height: 100%;
+		position: relative;
+		overflow-y: scroll;
 	}
 	.index_nav{
 	    position: fixed;
@@ -309,32 +350,41 @@
 	    margin: auto;
 	    margin-top: 0.4rem;
 	    margin-bottom: 0.7rem;
+	    position: relative;
 	}
-	#swiperIndex{
+	.swiper-index{
+		height: 100%;
+		padding-bottom: 0;
+	}
+	.swiper-slide{
+		overflow: hidden;
+	}
+	.swiper-index .swiper-slide img{
 	    width: 100%;
 	    height: 100%;
-	    padding-bottom: 0;
-	}
-	.swiper-index .swiper-slide a{
 	    display: block;
-	    width: 100%;
-	    height: 100%;
 	}
-	.swiper-index .swiper-slide a img{
-	    width: 100%;
-	    height: 100%;
+	input[type=search]::-webkit-search-cancel-button{
+	    -webkit-appearance: none;
 	}
-</style>
-
-<style>
-	#swiperIndex .swiper-pagination-bullet{
-	    width: 0.2rem;
+	.dotContainer{
+		text-align: center;
+		font-size: 0.28rem;
+	    position: absolute;
+	    bottom: 0.2rem;
+	    width: 100%;
+	    z-index: 99;
+	}
+	.dot{
+		display: inline-block;
+		width: 0.2rem;
 	    height: 0.06rem;
 	    border: 0;
 	    background: rgba(255,255,255,0.3);
 	    border-radius: 0.03rem;
+	    margin: 0 4px;
 	}
-	#swiperIndex .swiper-pagination-bullet-active{
-	    background: rgba(255,255,255,1);
+	.dot.active{
+		background: rgba(255,255,255,1);
 	}
 </style>
