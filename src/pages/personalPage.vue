@@ -93,7 +93,7 @@
             </table>
         </div>
         <div class="personal_logOff">
-            <p class="btn" @click="tuichu()">我改了退出登录</p>
+            <p class="btn" @click="tuichu()">退出登录</p>
         </div>
         <footer-bar :footerActive="currentPage"></footer-bar>
     </div>
